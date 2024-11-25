@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="keywords"
+      content="HTML, CSS, JavaScript, Web Development, Full Stack"
+    />
+    <meta
+      name="description"
+      content="Professional CV of Deni Tutić - Full Stack Web Developer"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deni Tutić - Full Stack Developer</title>
+    <link rel="stylesheet" href="cv.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    />
+    <script>
+      // Ensure page starts at top on refresh
+      window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+  </head>
+  <body>
+    <button
+      class="scroll-top-btn"
+      id="scrollTopBtn"
+      aria-label="Scroll to top"
+      style="z-index: 1000; position: fixed"
+    >
+      <i class="fas fa-arrow-up"></i>
+    </button>
+    <header>
+      <nav>
+        <ul>
+          <li>
+            <a
+              href="#education"
+              class="nav-link"
+              data-tooltip="My Educational Background"
+            >
+              <i class="fas fa-graduation-cap"></i> Education
+            </a>
+          </li>
+          <li>
+            <a
+              href="#about-me"
+              class="nav-link"
+              data-tooltip="Learn More About Me"
+            >
+              <i class="fas fa-user"></i> About Me
+            </a>
+          </li>
+          <li>
+            <a
+              href="#skills"
+              class="nav-link"
+              data-tooltip="Technical Expertise"
+            >
+              <i class="fas fa-code"></i> Skills
+            </a>
+          </li>
+          <li>
+            <a href="#contact" class="nav-link" data-tooltip="Get in Touch">
+              <i class="fas fa-envelope"></i> Contact
+            </a>
+          </li>
+        </ul>
+        <button id="theme-switch" class="theme-btn">
+          <i class="fas fa-moon"></i> Switch to Night Mode
+        </button>
+      </nav>
+    </header>
+    <main>
+      <section id="profile-picture" class="fade-in">
+        <h1><span class="highlight typewriter">Deni Tutić</span></h1>
+        <p class="subtitle slide-up">Full Stack Web Developer</p>
+        <div class="picture-placeholder">
+          <img
+            src="IMG-e1a6964be313fd3b8d9292e821b5e46b-V.jpg"
+            alt="Deni Tutić - Professional Photo"
+            loading="lazy"
+          />
+        </div>
+        <div class="social-links">
+          <a
+            href="https://github.com/DeniTutic"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-icon"
+            aria-label="Visit my GitHub profile"
+          >
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+      </section>
+      <section id="education" class="fade-in">
+        <h1><i class="fas fa-graduation-cap"></i> Education</h1>
+        <div class="education-card">
+          <p>
+            Currently pursuing a Bachelor's degree in Information Technology at
+            <a
+              href="https://www.ibu.edu.ba/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="highlight-link"
+            >
+              International Burch University </a
+            >, Sarajevo, Bosnia and Herzegovina.
+          </p>
+          <div class="education-details">
+            <span class="year"
+              ><i class="far fa-calendar-alt"></i> 2020 - Present</span
+            >
+          </div>
+        </div>
+      </section>
+      <section id="about-me" class="fade-in">
+        <h1><i class="fas fa-user"></i> About Me</h1>
+        <p class="about-intro">
+          A passionate and proactive full-stack developer with strong leadership
+          qualities. I thrive in collaborative environments, bringing:
+        </p>
+        <ul class="about-list animated">
+          <li class="slide-in">
+            <i class="fas fa-check"></i> Strong problem-solving abilities
+          </li>
+          <li class="slide-in">
+            <i class="fas fa-check"></i> Excellent team collaboration skills
+          </li>
+          <li class="slide-in">
+            <i class="fas fa-check"></i> Dedication to continuous learning
+          </li>
+          <li class="slide-in">
+            <i class="fas fa-check"></i> Effective communication
+          </li>
+        </ul>
+      </section>
+      <section id="skills" class="fade-in">
+        <h1><i class="fas fa-code"></i> Technical Skills</h1>
+        <div class="skills-grid">
+          <div class="skill-category">
+            <h3><i class="fas fa-laptop-code"></i> Frontend</h3>
+            <ul class="skill-list">
+              <li class="skill-item">
+                <i class="fab fa-html5"></i> HTML5
+                <div class="skill-bar" data-level="100"></div>
+              </li>
+              <li class="skill-item">
+                <i class="fab fa-css3-alt"></i> CSS3/SCSS
+                <div class="skill-bar" data-level="95"></div>
+              </li>
+              <li class="skill-item">
+                <i class="fab fa-js"></i> JavaScript
+                <div class="skill-bar" data-level="90"></div>
+              </li>
+              <li class="skill-item">
+                <i class="fab fa-react"></i> React
+                <div class="skill-bar" data-level="75"></div>
+              </li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3><i class="fas fa-server"></i> Backend</h3>
+            <ul class="skill-list">
+              <li class="skill-item">
+                <i class="fab fa-node-js"></i> Node.js
+                <div class="skill-bar" data-level="90"></div>
+              </li>
+              <li class="skill-item">
+                <i class="fas fa-database"></i> MongoDB
+                <div class="skill-bar" data-level="85"></div>
+              </li>
+              <li class="skill-item">
+                <i class="fas fa-lock"></i> Auth0
+                <div class="skill-bar" data-level="70"></div>
+              </li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3><i class="fas fa-language"></i> Languages</h3>
+            <ul class="skill-list">
+              <li class="skill-item">
+                Bosnian (Native)
+                <div class="skill-bar" data-level="100"></div>
+              </li>
+              <li class="skill-item">
+                English (B2-TOEFL)
+                <div class="skill-bar" data-level="90"></div>
+              </li>
+              <li class="skill-item">
+                Turkish (A2)
+                <div class="skill-bar" data-level="40"></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section id="contact" class="fade-in">
+        <h1><i class="fas fa-envelope"></i> Contact Information</h1>
+        <ul class="contact-list animated">
+          <li class="contact-item">
+            <i class="fas fa-envelope pulse"></i>
+            <a href="mailto:denitutic1@gmail.com" class="contact-link"
+              >denitutic1@gmail.com</a
+            >
+          </li>
+          <li class="contact-item">
+            <i class="fas fa-phone pulse"></i>
+            <a href="tel:+38762858621" class="contact-link"
+              >+387 62-858-621 (Viber/WhatsApp)</a
+            >
+          </li>
+          <li class="contact-item">
+            <i class="fas fa-map-marker-alt pulse"></i>
+            <span>Sarajevo, Bosnia and Herzegovina</span>
+          </li>
+        </ul>
+        <!-- <div class="contact-form">
+          <h2>Talk to me!</h2>
+          <form action="mailto:denitutic1@gmail.com" method="post" enctype="text/plain">
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="message">Message:</label>
+              <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="send-btn">
+              <i class="fas fa-paper-plane"></i> Send
+            </button>
+          </form>
+        </div> -->
+      </section>
+    </main>
+    <footer class="fade-in">
+      <p>Made with <i class="fas fa-heart pulse"></i> in Sarajevo</p>
+      <p class="copyright">© 2023 Deni Tutić. All rights reserved.</p>
+    </footer>
+    <script>
+      // Theme switcher
+      const themeSwitch = document.getElementById("theme-switch");
+      themeSwitch.addEventListener("click", () => {
+        document.body.classList.toggle("night-mode");
+        const icon = themeSwitch.querySelector("i");
+        if (document.body.classList.contains("night-mode")) {
+          themeSwitch.innerHTML =
+            '<i class="fas fa-sun"></i> Switch to Light Mode';
+        } else {
+          themeSwitch.innerHTML =
+            '<i class="fas fa-moon"></i> Switch to Night Mode';
+        }
+        localStorage.setItem(
+          "theme",
+          document.body.classList.contains("night-mode") ? "dark" : "light"
+        );
+      });
+
+      // Check for saved theme preference
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("night-mode");
+        themeSwitch.innerHTML =
+          '<i class="fas fa-sun"></i> Switch to Light Mode';
+      }
+
+      // Smooth scrolling
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href");
+          const targetSection = document.querySelector(targetId);
+          targetSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
+      });
+
+      // Scroll to top button
+      const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+      window.addEventListener("scroll", () => {
+        if (window.pageYOffset > 100) {
+          // Reduced threshold to show button earlier
+          scrollTopBtn.style.display = "block";
+          scrollTopBtn.style.opacity = "1";
+          scrollTopBtn.classList.add("fade-in");
+        } else {
+          scrollTopBtn.style.opacity = "0";
+          setTimeout(() => {
+            if (window.pageYOffset <= 100) {
+              scrollTopBtn.style.display = "none";
+            }
+          }, 300);
+          scrollTopBtn.classList.remove("fade-in");
+        }
+      });
+
+      scrollTopBtn.addEventListener("click", () => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+
+      // Intersection Observer for animations
+      const observerOptions = {
+        threshold: 0.2,
+        rootMargin: "0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll("section").forEach((section) => {
+        observer.observe(section);
+      });
+
+      // Initialize skill bars
+      document.querySelectorAll(".skill-bar").forEach((bar) => {
+        const level = bar.getAttribute("data-level");
+        bar.style.width = level + "%";
+      });
+
+      // Ensure page starts at top on load
+      window.onload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+  </body>
+</html>
