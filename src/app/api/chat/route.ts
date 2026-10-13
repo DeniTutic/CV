@@ -6,10 +6,11 @@ import { describeDevice, saveChat, type ChatEntry } from "@/lib/chat-log";
 
 // Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
 // but daily request limits, and Google may use free-tier chats to improve its products.
-// Free models, tried in order: the next one is used when one is overloaded, slow or out of quota.
+// Free models. Google's free tier is often overloaded, so they're asked in turn (see
+// openStream) and whichever starts answering first is used.
 const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3-flash-preview"];
-const RETRYABLE = new Set([429, 500, 503]);
-const ATTEMPT_TIMEOUT_MS = 8_000; // how long a model gets to start answering
+const HEDGE_DELAY_MS = 2_000; // start the next model if none has answered by then
+const ATTEMPT_TIMEOUT_MS = 10_000; // give up on a model that hasn't started answering
 const MAX_HISTORY = 12; // most recent messages sent to the model
 const MAX_QUESTION_CHARS = 1000;
 const RATE_LIMIT = { max: 20, windowMs: 10 * 60_000 }; // per IP
@@ -19,6 +20,74 @@ const UNAVAILABLE = `The assistant isn't available right now. You can reach ${fi
 const BLOCKED = `Sorry, I can't answer that one. Feel free to ask something else about ${firstName}'s work.`;
 
 let ai: GoogleGenAI | undefined;
+
+type GeminiStream = Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>>;
+
+// The model that answered last on this server instance; it's asked first next time.
+let lastWorking: string | undefined;
+
+// Starts with one model and adds the next one every HEDGE_DELAY_MS, or right away when
+// one fails, until a model starts answering. That one wins and the others are cancelled,
+// so an overloaded or hanging model never makes the visitor wait for long.
+function openStream(client: GoogleGenAI, contents: Content[], signal: AbortSignal) {
+  const order = lastWorking ? [lastWorking, ...MODELS.filter((m) => m !== lastWorking)] : MODELS;
+  const systemInstruction = `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`;
+
+  return new Promise<{ stream: GeminiStream; model: string } | { outOfQuota: boolean }>((resolve) => {
+    const attempts: { controller: AbortController; timers: ReturnType<typeof setTimeout>[] }[] = [];
+    let next = 0;
+    let running = 0;
+    let done = false;
+    let outOfQuota = true;
+
+    const finish = (result: { stream: GeminiStream; model: string } | { outOfQuota: boolean }) => {
+      done = true;
+      for (const { timers } of attempts) timers.forEach(clearTimeout);
+      resolve(result);
+    };
+
+    const launch = () => {
+      if (done || next >= order.length) return;
+      const model = order[next++];
+      const controller = new AbortController();
+      const timers = [setTimeout(() => controller.abort(), ATTEMPT_TIMEOUT_MS), setTimeout(launch, HEDGE_DELAY_MS)];
+      attempts.push({ controller, timers });
+      running++;
+
+      client.models
+        .generateContentStream({
+          model,
+          contents,
+          config: {
+            systemInstruction,
+            thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+            maxOutputTokens: 2048, // includes thinking; caps how much one question can use
+            abortSignal: AbortSignal.any([signal, controller.signal]),
+          },
+        })
+        .then((stream) => {
+          if (done) return controller.abort();
+          lastWorking = model;
+          for (const other of attempts) if (other.controller !== controller) other.controller.abort();
+          finish({ stream, model });
+        })
+        .catch((error) => {
+          running--;
+          timers.forEach(clearTimeout);
+          if (done) return;
+          if (signal.aborted) return finish({ outOfQuota: false });
+          const timedOut = controller.signal.aborted;
+          const status = error instanceof ApiError ? error.status : undefined;
+          console.error(`[chat] ${model} ${timedOut ? `timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s` : "failed:"}`, timedOut ? "" : error);
+          if (status !== 429) outOfQuota = false;
+          if (next < order.length) launch();
+          else if (running === 0) finish({ outOfQuota });
+        });
+    };
+
+    launch();
+  });
+}
 
 // Best-effort limiter: it lives in one server instance's memory and resets on cold
 // starts. It keeps one visitor from using up the free tier's daily quota.
@@ -103,42 +172,13 @@ export async function POST(request: Request) {
 
   const abort = new AbortController();
   ai ??= new GoogleGenAI({ apiKey });
-  let stream;
-  let usedModel = "";
-  let outOfQuota = true;
-  for (const model of MODELS) {
-    const attempt = new AbortController();
-    const timer = setTimeout(() => attempt.abort(), ATTEMPT_TIMEOUT_MS);
-    try {
-      stream = await ai.models.generateContentStream({
-        model,
-        contents,
-        config: {
-          systemInstruction: `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`,
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-          maxOutputTokens: 2048, // includes thinking; caps how much one question can use
-          abortSignal: AbortSignal.any([request.signal, abort.signal, attempt.signal]),
-        },
-      });
-      usedModel = model;
-      break;
-    } catch (error) {
-      if (request.signal.aborted) break;
-      const timedOut = attempt.signal.aborted;
-      const status = error instanceof ApiError ? error.status : undefined;
-      console.error(`[chat] ${model} ${timedOut ? `timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s` : "failed:"}`, timedOut ? "" : error);
-      if (status !== 429) outOfQuota = false;
-      if (!timedOut && !(status && RETRYABLE.has(status))) break;
-    } finally {
-      clearTimeout(timer);
-    }
-  }
-
-  if (!stream) {
-    const error = outOfQuota ? `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` : UNAVAILABLE;
+  const opened = await openStream(ai, contents, AbortSignal.any([request.signal, abort.signal]));
+  if (!("stream" in opened)) {
+    const error = opened.outOfQuota ? `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` : UNAVAILABLE;
     record(() => ({ answer: error, answered: false, model: "" }));
-    return Response.json({ error }, { status: outOfQuota ? 429 : 503 });
+    return Response.json({ error }, { status: opened.outOfQuota ? 429 : 503 });
   }
+  const { stream, model: usedModel } = opened;
 
   // The reply as the visitor sees it, and whether the model flagged it as unanswerable.
   let reply = "";
