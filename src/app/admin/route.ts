@@ -37,7 +37,7 @@ function exchange(entry: ChatEntry) {
   return `<div class="qa${entry.answered ? "" : " miss"}">
     <p class="q"><span>${formatTime(entry.time).split(", ")[1] ?? ""}</span> ${escape(entry.question)}</p>
     <p class="a">${escape(entry.answer)}</p>
-    ${entry.answered ? "" : `<p class="tag">Not answered: add it to src/data/knowledge.ts</p>`}
+    ${entry.answered ? "" : `<p class="tag">${entry.model ? "Not answered: add it to src/data/knowledge.ts" : "The assistant was down, so this visitor was shown your email instead"}</p>`}
   </div>`;
 }
 

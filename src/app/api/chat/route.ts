@@ -2,13 +2,14 @@ import { ApiError, GoogleGenAI, ThinkingLevel, type Content } from "@google/gena
 import { after } from "next/server";
 import { profile } from "@/data/profile";
 import { NO_INFO, systemPrompt } from "@/lib/assistant-prompt";
-import { describeDevice, saveChat } from "@/lib/chat-log";
+import { describeDevice, saveChat, type ChatEntry } from "@/lib/chat-log";
 
 // Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
 // but daily request limits, and Google may use free-tier chats to improve its products.
-// Free models, tried in order: the next one is used when one is overloaded or out of quota.
-const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash"];
+// Free models, tried in order: the next one is used when one is overloaded, slow or out of quota.
+const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3-flash-preview"];
 const RETRYABLE = new Set([429, 500, 503]);
+const ATTEMPT_TIMEOUT_MS = 8_000; // how long a model gets to start answering
 const MAX_HISTORY = 12; // most recent messages sent to the model
 const MAX_QUESTION_CHARS = 1000;
 const RATE_LIMIT = { max: 20, windowMs: 10 * 60_000 }; // per IP
@@ -73,9 +74,30 @@ export async function POST(request: Request) {
     return Response.json({ error: `Questions can be up to ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
 
+  // Who asked what, for the /admin chat log. Saved after the response is finished.
+  const { session, from } = (payload ?? {}) as Record<string, unknown>;
+  const visitor = {
+    session: typeof session === "string" && /^[\w-]{8,64}$/.test(session) ? session : "unknown",
+    question: contents.at(-1)?.parts?.[0]?.text ?? "",
+    country: request.headers.get("x-vercel-ip-country") ?? undefined,
+    city: decodeURIComponent(request.headers.get("x-vercel-ip-city") ?? "") || undefined,
+    device: describeDevice(request.headers.get("user-agent") ?? ""),
+    from: referrerHost(from, new URL(request.url).hostname),
+  };
+  const record = (result: () => Pick<ChatEntry, "answer" | "answered" | "model">, done?: Promise<void>) =>
+    after(async () => {
+      await done;
+      try {
+        await saveChat({ time: new Date().toISOString(), ...visitor, ...result() });
+      } catch (error) {
+        console.error("[chat] saving the chat failed:", error);
+      }
+    });
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.error("[chat] GEMINI_API_KEY is not set");
+    record(() => ({ answer: UNAVAILABLE, answered: false, model: "" }));
     return Response.json({ error: UNAVAILABLE }, { status: 503 });
   }
 
@@ -85,6 +107,8 @@ export async function POST(request: Request) {
   let usedModel = "";
   let outOfQuota = true;
   for (const model of MODELS) {
+    const attempt = new AbortController();
+    const timer = setTimeout(() => attempt.abort(), ATTEMPT_TIMEOUT_MS);
     try {
       stream = await ai.models.generateContentStream({
         model,
@@ -93,24 +117,27 @@ export async function POST(request: Request) {
           systemInstruction: `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`,
           thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
           maxOutputTokens: 2048, // includes thinking; caps how much one question can use
-          abortSignal: AbortSignal.any([request.signal, abort.signal]),
+          abortSignal: AbortSignal.any([request.signal, abort.signal, attempt.signal]),
         },
       });
       usedModel = model;
       break;
     } catch (error) {
+      if (request.signal.aborted) break;
+      const timedOut = attempt.signal.aborted;
       const status = error instanceof ApiError ? error.status : undefined;
-      console.error(`[chat] ${model} failed:`, error);
+      console.error(`[chat] ${model} ${timedOut ? `timed out after ${ATTEMPT_TIMEOUT_MS / 1000}s` : "failed:"}`, timedOut ? "" : error);
       if (status !== 429) outOfQuota = false;
-      if (!status || !RETRYABLE.has(status)) break;
+      if (!timedOut && !(status && RETRYABLE.has(status))) break;
+    } finally {
+      clearTimeout(timer);
     }
   }
 
   if (!stream) {
-    if (outOfQuota) {
-      return Response.json({ error: `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` }, { status: 429 });
-    }
-    return Response.json({ error: UNAVAILABLE }, { status: 503 });
+    const error = outOfQuota ? `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` : UNAVAILABLE;
+    record(() => ({ answer: error, answered: false, model: "" }));
+    return Response.json({ error }, { status: outOfQuota ? 429 : 503 });
   }
 
   // The reply as the visitor sees it, and whether the model flagged it as unanswerable.
@@ -173,27 +200,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const { session, from } = (payload ?? {}) as Record<string, unknown>;
-  const lastQuestion = contents.at(-1)?.parts?.[0]?.text ?? "";
-  after(async () => {
-    await finished;
-    try {
-      await saveChat({
-        time: new Date().toISOString(),
-        session: typeof session === "string" && /^[\w-]{8,64}$/.test(session) ? session : "unknown",
-        question: lastQuestion,
-        answer: reply,
-        answered,
-        model: usedModel,
-        country: request.headers.get("x-vercel-ip-country") ?? undefined,
-        city: decodeURIComponent(request.headers.get("x-vercel-ip-city") ?? "") || undefined,
-        device: describeDevice(request.headers.get("user-agent") ?? ""),
-        from: referrerHost(from, new URL(request.url).hostname),
-      });
-    } catch (error) {
-      console.error("[chat] saving the chat failed:", error);
-    }
-  });
+  record(() => ({ answer: reply, answered, model: usedModel }), finished);
 
   return new Response(body, {
     headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
