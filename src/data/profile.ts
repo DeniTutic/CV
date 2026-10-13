@@ -253,6 +253,22 @@ export const spokenLanguages = [
   { name: "Bosnian / Croatian / Serbian", level: "Native" },
 ];
 
+// The "ask about Deni" AI chat. It answers from everything in this file — add
+// anything else visitors might ask (availability, work authorization, hobbies …)
+// to `notes` as plain sentences. It never answers beyond these facts.
+export const assistant = {
+  // So the assistant doesn't have to guess from the name.
+  pronouns: "he/him",
+  greeting: "Hi! I'm an AI assistant that knows Deni's experience, projects and stack. What would you like to know?",
+  suggestions: [
+    "What is Deni working on right now?",
+    "Which AI projects has Deni built?",
+    "Is Deni open to relocating to the U.S.?",
+    "What's Deni's strongest tech stack?",
+  ],
+  notes: [] as string[],
+};
+
 export const nav = [
   { id: "about", label: "about" },
   { id: "journey", label: "journey" },
