@@ -64,6 +64,12 @@ export function AskDeni() {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  // Wake the assistant's server shortly after the page loads, so the first answer is quick.
+  useEffect(() => {
+    const timer = setTimeout(() => fetch("/api/chat").catch(() => {}), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const ask = async (question: string) => {
     const text = question.trim().slice(0, MAX_CHARS);
     if (!text || pending) return;

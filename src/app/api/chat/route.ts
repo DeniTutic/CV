@@ -1,8 +1,9 @@
 import { ApiError, GoogleGenAI, ThinkingLevel, type Content } from "@google/genai";
-import { after } from "next/server";
+import { after, connection } from "next/server";
 import { profile } from "@/data/profile";
 import { NO_INFO, systemPrompt } from "@/lib/assistant-prompt";
 import { describeDevice, saveChat, type ChatEntry } from "@/lib/chat-log";
+import { loadPreferredModel, savePreferredModel } from "@/lib/preferred-model";
 
 // Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
 // but daily request limits, and Google may use free-tier chats to improve its products.
@@ -23,8 +24,17 @@ let ai: GoogleGenAI | undefined;
 
 type GeminiStream = Awaited<ReturnType<GoogleGenAI["models"]["generateContentStream"]>>;
 
-// The model that answered last on this server instance; it's asked first next time.
+// The model that answered last; it's asked first next time. Loaded from Blob storage
+// when a server instance starts, so it survives restarts.
 let lastWorking: string | undefined;
+let lastWorkingLoaded = false;
+
+async function rememberLastWorking() {
+  if (lastWorkingLoaded) return;
+  const saved = await loadPreferredModel();
+  if (saved && MODELS.includes(saved)) lastWorking ??= saved;
+  lastWorkingLoaded = true;
+}
 
 // Starts with one model and adds the next one every HEDGE_DELAY_MS, or right away when
 // one fails, until a model starts answering. That one wins and the others are cancelled,
@@ -131,6 +141,14 @@ function referrerHost(value: unknown, ownHost: string) {
   }
 }
 
+// Warm-up: the chat widget calls this when the page loads, so the server is already
+// running and knows which model works before the visitor asks anything.
+export async function GET() {
+  await connection();
+  await rememberLastWorking();
+  return new Response(null, { status: 204, headers: { "Cache-Control": "no-store" } });
+}
+
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   if (isRateLimited(ip)) {
@@ -172,6 +190,8 @@ export async function POST(request: Request) {
 
   const abort = new AbortController();
   ai ??= new GoogleGenAI({ apiKey });
+  await rememberLastWorking();
+  const preferred = lastWorking;
   const opened = await openStream(ai, contents, AbortSignal.any([request.signal, abort.signal]));
   if (!("stream" in opened)) {
     const error = opened.outOfQuota ? `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` : UNAVAILABLE;
@@ -179,6 +199,9 @@ export async function POST(request: Request) {
     return Response.json({ error }, { status: opened.outOfQuota ? 429 : 503 });
   }
   const { stream, model: usedModel } = opened;
+  if (usedModel !== preferred) {
+    after(() => savePreferredModel(usedModel).catch((error) => console.error("[chat] saving the preferred model failed:", error)));
+  }
 
   // The reply as the visitor sees it, and whether the model flagged it as unanswerable.
   let reply = "";
