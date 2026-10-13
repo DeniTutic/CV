@@ -1,6 +1,8 @@
 import { ApiError, GoogleGenAI, ThinkingLevel, type Content } from "@google/genai";
+import { after } from "next/server";
 import { profile } from "@/data/profile";
-import { systemPrompt } from "@/lib/assistant-prompt";
+import { NO_INFO, systemPrompt } from "@/lib/assistant-prompt";
+import { describeDevice, saveChat } from "@/lib/chat-log";
 
 // Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
 // but daily request limits, and Google may use free-tier chats to improve its products.
@@ -13,7 +15,7 @@ const RATE_LIMIT = { max: 20, windowMs: 10 * 60_000 }; // per IP
 
 const firstName = profile.name.split(" ")[0];
 const UNAVAILABLE = `The assistant isn't available right now. You can reach ${firstName} at ${profile.email}.`;
-const NO_ANSWER = `Sorry, I can't answer that one. Feel free to ask something else about ${firstName}'s work.`;
+const BLOCKED = `Sorry, I can't answer that one. Feel free to ask something else about ${firstName}'s work.`;
 
 let ai: GoogleGenAI | undefined;
 
@@ -49,13 +51,24 @@ function parseMessages(body: unknown): Content[] | null {
   return recent.at(-1)?.role === "user" ? recent : null;
 }
 
+// Where the visitor came from (e.g. linkedin.com), from the page's document.referrer.
+function referrerHost(value: unknown, ownHost: string) {
+  try {
+    const host = new URL(String(value)).hostname.replace(/^www\./, "");
+    return host && host !== ownHost ? host : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   if (isRateLimited(ip)) {
     return Response.json({ error: "That's a lot of questions! Try again in a few minutes." }, { status: 429 });
   }
 
-  const contents = parseMessages(await request.json().catch(() => null));
+  const payload = await request.json().catch(() => null);
+  const contents = parseMessages(payload);
   if (!contents) {
     return Response.json({ error: `Questions can be up to ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
@@ -69,6 +82,7 @@ export async function POST(request: Request) {
   const abort = new AbortController();
   ai ??= new GoogleGenAI({ apiKey });
   let stream;
+  let usedModel = "";
   let outOfQuota = true;
   for (const model of MODELS) {
     try {
@@ -82,6 +96,7 @@ export async function POST(request: Request) {
           abortSignal: AbortSignal.any([request.signal, abort.signal]),
         },
       });
+      usedModel = model;
       break;
     } catch (error) {
       const status = error instanceof ApiError ? error.status : undefined;
@@ -98,24 +113,56 @@ export async function POST(request: Request) {
     return Response.json({ error: UNAVAILABLE }, { status: 503 });
   }
 
+  // The reply as the visitor sees it, and whether the model flagged it as unanswerable.
+  let reply = "";
+  let answered = true;
+  let finish!: () => void;
+  const finished = new Promise<void>((resolve) => (finish = resolve));
+
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
-      let answered = false;
+      const send = (text: string) => {
+        if (!text) return;
+        reply += text;
+        controller.enqueue(encoder.encode(text));
+      };
+      // Hold back the start of the reply until we know whether it opens with NO_INFO.
+      let head = "";
+      let headSent = false;
+      const sendHead = () => {
+        headSent = true;
+        const trimmed = head.trimStart();
+        if (trimmed.startsWith(NO_INFO)) {
+          answered = false;
+          send(trimmed.slice(NO_INFO.length).trimStart());
+        } else {
+          send(head);
+        }
+      };
+
       try {
         for await (const chunk of stream) {
           const text = chunk.text;
           if (!text) continue;
-          answered = true;
-          controller.enqueue(encoder.encode(text));
+          if (headSent) {
+            send(text);
+            continue;
+          }
+          head += text;
+          const trimmed = head.trimStart();
+          if (trimmed.length >= NO_INFO.length || !NO_INFO.startsWith(trimmed)) sendHead();
         }
+        if (!headSent) sendHead();
         // Nothing came back, e.g. blocked by a safety filter.
-        if (!answered) controller.enqueue(encoder.encode(NO_ANSWER));
+        if (!reply) send(BLOCKED);
       } catch (error) {
         if (!request.signal.aborted && !abort.signal.aborted) {
           console.error("[chat] stream failed:", error);
-          controller.enqueue(encoder.encode(`${answered ? "\n\n" : ""}${UNAVAILABLE}`));
+          send(`${reply ? "\n\n" : ""}${UNAVAILABLE}`);
         }
+      } finally {
+        finish();
       }
       try {
         controller.close();
@@ -124,6 +171,28 @@ export async function POST(request: Request) {
     cancel() {
       abort.abort();
     },
+  });
+
+  const { session, from } = (payload ?? {}) as Record<string, unknown>;
+  const lastQuestion = contents.at(-1)?.parts?.[0]?.text ?? "";
+  after(async () => {
+    await finished;
+    try {
+      await saveChat({
+        time: new Date().toISOString(),
+        session: typeof session === "string" && /^[\w-]{8,64}$/.test(session) ? session : "unknown",
+        question: lastQuestion,
+        answer: reply,
+        answered,
+        model: usedModel,
+        country: request.headers.get("x-vercel-ip-country") ?? undefined,
+        city: decodeURIComponent(request.headers.get("x-vercel-ip-city") ?? "") || undefined,
+        device: describeDevice(request.headers.get("user-agent") ?? ""),
+        from: referrerHost(from, new URL(request.url).hostname),
+      });
+    } catch (error) {
+      console.error("[chat] saving the chat failed:", error);
+    }
   });
 
   return new Response(body, {

@@ -40,6 +40,8 @@ export function AskDeni() {
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
+  // Groups one visitor's questions together in the /admin chat log.
+  const sessionRef = useRef("");
 
   const wasOpen = useRef(false);
   useEffect(() => {
@@ -72,6 +74,7 @@ export function AskDeni() {
     setInput("");
     setPending(true);
 
+    sessionRef.current ||= crypto.randomUUID();
     const controller = new AbortController();
     abortRef.current = controller;
     let reply = "";
@@ -79,7 +82,11 @@ export function AskDeni() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history.map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({
+          messages: history.map(({ role, content }) => ({ role, content })),
+          session: sessionRef.current,
+          from: document.referrer,
+        }),
         signal: controller.signal,
       });
       if (!res.ok || !res.body) {
@@ -236,7 +243,8 @@ export function AskDeni() {
                 )}
               </div>
               <p className="mt-2 px-1 text-[11px] text-muted">
-                AI answers from {firstName}&apos;s profile and can make mistakes. Double-check anything important.
+                AI answers from {firstName}&apos;s profile and can make mistakes. Chats are saved so {firstName} can
+                improve the answers.
               </p>
             </form>
           </motion.div>
