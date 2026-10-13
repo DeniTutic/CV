@@ -253,9 +253,8 @@ export const spokenLanguages = [
   { name: "Bosnian / Croatian / Serbian", level: "Native" },
 ];
 
-// The "ask about Deni" AI chat. It answers from everything in this file — add
-// anything else visitors might ask (availability, work authorization, hobbies …)
-// to `notes` as plain sentences. It never answers beyond these facts.
+// The "ask about Deni" AI chat. It answers from everything in this file plus
+// src/data/knowledge.ts (facts that aren't on the site), and never beyond them.
 export const assistant = {
   // So the assistant doesn't have to guess from the name.
   pronouns: "he/him",
@@ -266,7 +265,6 @@ export const assistant = {
     "Is Deni open to relocating to the U.S.?",
     "What's Deni's strongest tech stack?",
   ],
-  notes: [] as string[],
 };
 
 export const nav = [

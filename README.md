@@ -23,7 +23,7 @@ Everything you'd want to change lives in **`src/data/profile.ts`**: contact link
 
 The "ask about deni" button opens a chat that answers visitors' questions using Google's Gemini API on its free tier.
 
-- **Knowledge:** it reads the same `src/data/profile.ts` the site renders (`src/lib/assistant-prompt.ts` turns it into the system prompt). To teach it something that isn't on the page (availability, work authorization, hobbies), add a sentence to `assistant.notes`. It's told never to answer beyond these facts.
+- **Knowledge:** it reads the same `src/data/profile.ts` the site renders (`src/lib/assistant-prompt.ts` turns it into the system prompt). To teach it something that isn't on the page (age, availability, work authorization, hobbies), add a question and answer to `src/data/knowledge.ts`. It's told never to answer beyond these facts, so when it says it doesn't know something, that's the file to update.
 - **Key:** create a free key at [Google AI Studio](https://aistudio.google.com/apikey) (no card needed). Set `GEMINI_API_KEY` in `.env.local` locally and in Vercel → Project → Settings → Environment Variables, then redeploy. Without a key, or once the free daily quota is used up, the chat replies with your email instead.
 - **Cost:** $0 on the free tier. Don't add billing to the Google Cloud project behind the key, or it stops being free. Google may use free-tier chats to improve its products. Models are listed in `MODELS` in `src/app/api/chat/route.ts`: it starts with `gemini-3.8-flash` and falls back to the next free model when one is overloaded or out of quota.
 - **Abuse limits:** 1,000 characters per question, last 12 messages of history, 20 questions per IP per 10 minutes (in memory, per instance), so one visitor can't burn the daily quota.
@@ -36,6 +36,7 @@ src/
   app/api/chat/   AI assistant endpoint (streams Gemini's answer)
   components/     Nav, Hero, Terminal, About, Journey, Projects, Stack, Contact, Footer, AskDeni …
   data/profile.ts all site content (also the assistant's knowledge)
+  data/knowledge.ts extra Q&A only the assistant knows
   lib/            assistant system prompt
   assets/         project screenshots
 public/           résumé PDF
