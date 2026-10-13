@@ -244,8 +244,8 @@ export const skills = [
   { group: "Frontend", items: ["React", "Next.js", "Vite", "HTML5", "CSS", "Responsive UI", "i18n"] },
   { group: "Backend", items: ["Node.js", "Express", "Spring Boot", "REST APIs", "Socket.io", "JWT", "OAuth 2.0", "Auth0"] },
   { group: "Databases", items: ["MongoDB", "Mongoose", "PostgreSQL", "Prisma", "MySQL", "MS SQL Server"] },
-  { group: "AI & Cloud", items: ["Claude API", "OpenAI Whisper", "Vercel", "Railway", "AWS", "Stripe", "Cloudinary"] },
-  { group: "Tools", items: ["Git", "GitHub", "Postman", "Selenium", "Agile/Scrum"] },
+  { group: "AI & Cloud", items: ["Claude API", "OpenAI Whisper", "Vercel", "Railway", "Azure", "Stripe", "Cloudinary"] },
+  { group: "Tools", items: ["Git", "GitHub", "Docker", "Postman", "Selenium", "Agile/Scrum"] },
 ];
 
 export const spokenLanguages = [

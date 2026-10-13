@@ -14,6 +14,10 @@ export const faq: { q: string; a: string }[] = [
     q: "Does Deni need visa sponsorship to work in the U.S.?",
     a: "No, Deni doesn't need visa sponsorship. He plans to move to the U.S. soon and live there.",
   },
+  {
+    q: "Where in the U.S. will Deni live? Is he open to other locations?",
+    a: "Deni will live in Denver, Colorado. For remote roles he's open to teams anywhere.",
+  },
   { q: "When can Deni start a new job?", a: "Deni can start a new role in May 2027." },
   {
     q: "What kind of work is Deni looking for?",
@@ -38,6 +42,42 @@ export const faq: { q: string; a: string }[] = [
   {
     q: "What are Deni's biggest strengths?",
     a: "Being 100% correct and precise, being on time, staying persistent until the job is done, and not wasting time. He's a constant learner, works smoothly with remote U.S.-based teams, and ships fast: he took Carina from requirements to a deployed V1 in under two days.",
+  },
+  {
+    q: "Which languages does Deni speak?",
+    a: "English (professional working), Bosnian/Croatian/Serbian (native), and a little Turkish.",
+  },
+  {
+    q: "Does Deni have any certifications? What was his thesis or final project?",
+    a: "Deni doesn't have certifications yet, but he's working on some. His final university project is coming up soon.",
+  },
+  {
+    q: "What is Deni's favorite programming language or tool?",
+    a: "Deni's home turf is the MERN stack (MongoDB, Express, React and Node.js), but he appreciates every tool for what it does best and is always keen to learn new ones and take on more.",
+  },
+  {
+    q: "Which project is Deni proudest of?",
+    a: "Vela, because it helps people communicate better and understand each other.",
+  },
+  {
+    q: "Has Deni led or mentored anyone? What team sizes has he worked in?",
+    a: "Deni has worked in teams of up to 10 people. He hasn't had a formal mentoring role, but at university he regularly helped younger students.",
+  },
+  {
+    q: "Does Deni have DevOps or cloud experience, like Docker, CI/CD, AWS or Azure?",
+    a: "Deni has hands-on experience with Azure and Docker, and deploys his projects on Vercel and Railway. He hasn't worked with AWS.",
+  },
+  {
+    q: "Is Deni taking freelance clients? What kind of projects?",
+    a: "Yes. Deni shapes each project around what the client needs: web apps and websites, full-stack development, AI integration, mobile apps and AI automation.",
+  },
+  {
+    q: "What did professional basketball teach Deni that he brings to work?",
+    a: "How to be a team player, that persistence and hard work pay off, and how to listen, communicate and get everyone on the same page.",
+  },
+  {
+    q: "What's the best way to contact Deni?",
+    a: `Email (${profile.email}) or LinkedIn (${profile.linkedin}). He's also on WhatsApp and Viber.`,
   },
 ];
 
