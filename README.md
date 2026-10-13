@@ -25,7 +25,7 @@ The "ask about deni" button opens a chat that answers visitors' questions using 
 
 - **Knowledge:** it reads the same `src/data/profile.ts` the site renders (`src/lib/assistant-prompt.ts` turns it into the system prompt). To teach it something that isn't on the page (availability, work authorization, hobbies), add a sentence to `assistant.notes`. It's told never to answer beyond these facts.
 - **Key:** create a free key at [Google AI Studio](https://aistudio.google.com/apikey) (no card needed). Set `GEMINI_API_KEY` in `.env.local` locally and in Vercel → Project → Settings → Environment Variables, then redeploy. Without a key, or once the free daily quota is used up, the chat replies with your email instead.
-- **Cost:** $0 on the free tier. Don't add billing to the Google Cloud project behind the key, or it stops being free. Google may use free-tier chats to improve its products. The model is `MODEL` in `src/app/api/chat/route.ts` (`gemini-3.8-flash`).
+- **Cost:** $0 on the free tier. Don't add billing to the Google Cloud project behind the key, or it stops being free. Google may use free-tier chats to improve its products. Models are listed in `MODELS` in `src/app/api/chat/route.ts`: it starts with `gemini-3.8-flash` and falls back to the next free model when one is overloaded or out of quota.
 - **Abuse limits:** 1,000 characters per question, last 12 messages of history, 20 questions per IP per 10 minutes (in memory, per instance), so one visitor can't burn the daily quota.
 
 ## Structure

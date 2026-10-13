@@ -4,7 +4,9 @@ import { systemPrompt } from "@/lib/assistant-prompt";
 
 // Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
 // but daily request limits, and Google may use free-tier chats to improve its products.
-const MODEL = "gemini-3.8-flash";
+// Free models, tried in order: the next one is used when one is overloaded or out of quota.
+const MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash"];
+const RETRYABLE = new Set([429, 500, 503]);
 const MAX_HISTORY = 12; // most recent messages sent to the model
 const MAX_QUESTION_CHARS = 1000;
 const RATE_LIMIT = { max: 20, windowMs: 10 * 60_000 }; // per IP
@@ -65,22 +67,32 @@ export async function POST(request: Request) {
   }
 
   const abort = new AbortController();
+  ai ??= new GoogleGenAI({ apiKey });
   let stream;
-  try {
-    ai ??= new GoogleGenAI({ apiKey });
-    stream = await ai.models.generateContentStream({
-      model: MODEL,
-      contents,
-      config: {
-        systemInstruction: `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`,
-        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-        maxOutputTokens: 2048, // includes thinking; caps how much one question can use
-        abortSignal: AbortSignal.any([request.signal, abort.signal]),
-      },
-    });
-  } catch (error) {
-    console.error("[chat] request failed:", error);
-    if (error instanceof ApiError && error.status === 429) {
+  let outOfQuota = true;
+  for (const model of MODELS) {
+    try {
+      stream = await ai.models.generateContentStream({
+        model,
+        contents,
+        config: {
+          systemInstruction: `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+          maxOutputTokens: 2048, // includes thinking; caps how much one question can use
+          abortSignal: AbortSignal.any([request.signal, abort.signal]),
+        },
+      });
+      break;
+    } catch (error) {
+      const status = error instanceof ApiError ? error.status : undefined;
+      console.error(`[chat] ${model} failed:`, error);
+      if (status !== 429) outOfQuota = false;
+      if (!status || !RETRYABLE.has(status)) break;
+    }
+  }
+
+  if (!stream) {
+    if (outOfQuota) {
       return Response.json({ error: `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` }, { status: 429 });
     }
     return Response.json({ error: UNAVAILABLE }, { status: 503 });
