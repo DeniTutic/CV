@@ -1,22 +1,22 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { ApiError, GoogleGenAI, ThinkingLevel, type Content } from "@google/genai";
 import { profile } from "@/data/profile";
 import { systemPrompt } from "@/lib/assistant-prompt";
 
-// Haiku is the cheapest Claude model: well under $0.001 per question.
-// "claude-opus-5-5" gives more polished answers at ~1¢ per question.
-const MODEL = "claude-haiku-5-5";
+// Gemini API free tier (key from https://aistudio.google.com/apikey): no card, no cost,
+// but daily request limits, and Google may use free-tier chats to improve its products.
+const MODEL = "gemini-3.8-flash";
 const MAX_HISTORY = 12; // most recent messages sent to the model
 const MAX_QUESTION_CHARS = 1000;
 const RATE_LIMIT = { max: 20, windowMs: 10 * 60_000 }; // per IP
 
 const firstName = profile.name.split(" ")[0];
 const UNAVAILABLE = `The assistant isn't available right now. You can reach ${firstName} at ${profile.email}.`;
-const DECLINED = `Sorry, I can't help with that one. Feel free to ask something else about ${firstName}'s work.`;
+const NO_ANSWER = `Sorry, I can't answer that one. Feel free to ask something else about ${firstName}'s work.`;
 
-let client: Anthropic | undefined;
+let ai: GoogleGenAI | undefined;
 
 // Best-effort limiter: it lives in one server instance's memory and resets on cold
-// starts. For real protection, add a rate-limit rule in the Vercel Firewall too.
+// starts. It keeps one visitor from using up the free tier's daily quota.
 const hits = new Map<string, number[]>();
 
 function isRateLimited(ip: string) {
@@ -28,22 +28,22 @@ function isRateLimited(ip: string) {
   return recent.length > RATE_LIMIT.max;
 }
 
-function parseMessages(body: unknown): Anthropic.MessageParam[] | null {
+function parseMessages(body: unknown): Content[] | null {
   const raw = (body as { messages?: unknown } | null)?.messages;
   if (!Array.isArray(raw)) return null;
 
-  const messages: Anthropic.MessageParam[] = [];
+  const messages: Content[] = [];
   for (const item of raw) {
     const { role, content } = (item ?? {}) as Record<string, unknown>;
     if ((role !== "user" && role !== "assistant") || typeof content !== "string") return null;
     const text = content.trim();
     if (!text) continue;
     if (role === "user" && text.length > MAX_QUESTION_CHARS) return null;
-    messages.push({ role, content: text.slice(0, 4000) });
+    messages.push({ role: role === "user" ? "user" : "model", parts: [{ text: text.slice(0, 4000) }] });
   }
 
   let recent = messages.slice(-MAX_HISTORY);
-  while (recent[0]?.role === "assistant") recent = recent.slice(1);
+  while (recent[0]?.role === "model") recent = recent.slice(1);
   return recent.at(-1)?.role === "user" ? recent : null;
 }
 
@@ -53,32 +53,35 @@ export async function POST(request: Request) {
     return Response.json({ error: "That's a lot of questions! Try again in a few minutes." }, { status: 429 });
   }
 
-  const messages = parseMessages(await request.json().catch(() => null));
-  if (!messages) {
+  const contents = parseMessages(await request.json().catch(() => null));
+  if (!contents) {
     return Response.json({ error: `Questions can be up to ${MAX_QUESTION_CHARS} characters.` }, { status: 400 });
   }
 
-  let events;
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.error("[chat] GEMINI_API_KEY is not set");
+    return Response.json({ error: UNAVAILABLE }, { status: 503 });
+  }
+
+  const abort = new AbortController();
+  let stream;
   try {
-    client ??= new Anthropic();
-    events = await client.messages.create(
-      {
-        model: MODEL,
-        max_tokens: 4096, // hard cap: this endpoint is public
-        output_config: { effort: "low" },
-        system: [
-          { type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } },
-          { type: "text", text: `Today's date: ${new Date().toISOString().slice(0, 10)}` },
-        ],
-        messages,
-        stream: true,
+    ai ??= new GoogleGenAI({ apiKey });
+    stream = await ai.models.generateContentStream({
+      model: MODEL,
+      contents,
+      config: {
+        systemInstruction: `${systemPrompt}\n\nToday's date: ${new Date().toISOString().slice(0, 10)}`,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        maxOutputTokens: 2048, // includes thinking; caps how much one question can use
+        abortSignal: AbortSignal.any([request.signal, abort.signal]),
       },
-      { signal: request.signal },
-    );
+    });
   } catch (error) {
     console.error("[chat] request failed:", error);
-    if (error instanceof Anthropic.RateLimitError) {
-      return Response.json({ error: "The assistant is busy. Try again in a minute." }, { status: 429 });
+    if (error instanceof ApiError && error.status === 429) {
+      return Response.json({ error: `The assistant is out of answers for today. You can reach ${firstName} at ${profile.email}.` }, { status: 429 });
     }
     return Response.json({ error: UNAVAILABLE }, { status: 503 });
   }
@@ -86,20 +89,20 @@ export async function POST(request: Request) {
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
-      let stopReason: string | null = null;
+      let answered = false;
       try {
-        for await (const event of events) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          } else if (event.type === "message_delta") {
-            stopReason = event.delta.stop_reason;
-          }
+        for await (const chunk of stream) {
+          const text = chunk.text;
+          if (!text) continue;
+          answered = true;
+          controller.enqueue(encoder.encode(text));
         }
-        if (stopReason === "refusal") controller.enqueue(encoder.encode(`\n\n${DECLINED}`));
+        // Nothing came back, e.g. blocked by a safety filter.
+        if (!answered) controller.enqueue(encoder.encode(NO_ANSWER));
       } catch (error) {
-        if (!request.signal.aborted) {
+        if (!request.signal.aborted && !abort.signal.aborted) {
           console.error("[chat] stream failed:", error);
-          controller.enqueue(encoder.encode(`\n\n${UNAVAILABLE}`));
+          controller.enqueue(encoder.encode(`${answered ? "\n\n" : ""}${UNAVAILABLE}`));
         }
       }
       try {
@@ -107,7 +110,7 @@ export async function POST(request: Request) {
       } catch {} // already cancelled by the visitor
     },
     cancel() {
-      events.controller.abort();
+      abort.abort();
     },
   });
 
