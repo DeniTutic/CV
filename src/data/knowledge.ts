@@ -48,8 +48,8 @@ export const faq: { q: string; a: string }[] = [
     a: "English (professional working), Bosnian/Croatian/Serbian (native), and a little Turkish.",
   },
   {
-    q: "Does Deni have any certifications? What was his thesis or final project?",
-    a: "Deni doesn't have certifications yet, but he's working on some. His final university project is coming up soon.",
+    q: "Does Deni have any certifications?",
+    a: "Deni doesn't have certifications yet, but he's working on some.",
   },
   {
     q: "What is Deni's favorite programming language or tool?",
