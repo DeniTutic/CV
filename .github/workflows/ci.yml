@@ -14,7 +14,9 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
+      # Not `npm ci`: a lockfile written on macOS leaves out a few Linux-only optional
+      # packages (@emnapi/*), which `npm ci` rejects. Vercel installs the same way.
+      - run: npm install --no-audit --no-fund
       - run: npm run lint
       - run: npm test
       - run: npm run build
