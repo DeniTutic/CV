@@ -1,6 +1,7 @@
 import { ArrowDown, Download, Mail, MapPin } from "lucide-react";
 import { heroRoles, profile } from "@/data/profile";
 import { Avatar } from "./Avatar";
+import { Relocation } from "./Relocation";
 import { GithubIcon, LinkedinIcon } from "./icons";
 import { Terminal } from "./Terminal";
 import { Typewriter } from "./Typewriter";
@@ -36,7 +37,7 @@ export function Hero() {
           <div className="rise" style={step(0)}>
             <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1.5 font-mono text-xs text-fg-soft">
               <span className="pulse-dot size-2 shrink-0 rounded-full bg-ok" />
-              Currently @ {profile.currently.company} · open to U.S. relocation
+              Currently @ {profile.currently.company} · remote, U.S. team
             </span>
           </div>
 
@@ -98,6 +99,10 @@ export function Hero() {
                 </a>
               ))}
             </div>
+          </div>
+
+          <div className="rise mt-7" style={step(6)}>
+            <Relocation />
           </div>
         </div>
 

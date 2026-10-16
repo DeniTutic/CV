@@ -9,11 +9,14 @@ npm install
 cp .env.example .env.local   # then paste your free Gemini API key
 npm run dev      # http://localhost:3000
 npm run build    # production build (all routes prerendered)
+npm test         # assistant model-fallback tests (Gemini is faked, no key needed)
 ```
+
+GitHub Actions runs lint, tests and the build on every push to `main` and on pull requests.
 
 ## Edit content
 
-Everything you'd want to change lives in **`src/data/profile.ts`**: contact links, hero roles, about text, stats, the journey timeline, projects, skills and languages.
+Everything you'd want to change lives in **`src/data/profile.ts`**: contact links, where you're moving, hero roles, about text, stats, the journey timeline, projects, skills and languages.
 
 - **Add your photo:** put it at `public/profile.jpg` and set `photo: "/profile.jpg"` in `profile.ts`. The "DT" monogram is replaced automatically.
 - **Update the résumé:** replace `public/Deni-Tutic-Resume.pdf` (keep the filename, or change `resume` in `profile.ts`).
@@ -21,7 +24,7 @@ Everything you'd want to change lives in **`src/data/profile.ts`**: contact link
 
 ## AI assistant
 
-The "ask about deni" button opens a chat that answers visitors' questions using Google's Gemini API on its free tier.
+The "ask about deni" button opens a chat that answers visitors' questions using Google's Gemini API on its free tier. A link to `/#ask` (e.g. `https://deni-tutic.vercel.app/#ask` on LinkedIn) opens it right away. After two answers the chat offers Email and LinkedIn buttons.
 
 - **Knowledge:** it reads the same `src/data/profile.ts` the site renders (`src/lib/assistant-prompt.ts` turns it into the system prompt). To teach it something that isn't on the page (age, availability, work authorization, hobbies), add a question and answer to `src/data/knowledge.ts`. It's told never to answer beyond these facts, so when it says it doesn't know something, that's the file to update.
 - **Key:** create a free key at [Google AI Studio](https://aistudio.google.com/apikey) (no card needed). Set `GEMINI_API_KEY` in `.env.local` locally and in Vercel → Project → Settings → Environment Variables, then redeploy. Without a key, or once the free daily quota is used up, the chat replies with your email instead.

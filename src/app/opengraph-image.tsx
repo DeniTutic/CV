@@ -21,7 +21,7 @@ async function loadFont(family: string, weight: number, text: string) {
 export default async function Image() {
   const title = profile.name;
   const role = profile.role;
-  const mono = "~/deni  react · node.js · next.js · llm integrations  sarajevo → u.s.";
+  const mono = "~/deni  react · node.js · next.js · llm integrations  sarajevo → denver";
 
   const [inter, jet] = await Promise.all([
     loadFont("Inter", 600, title + role),

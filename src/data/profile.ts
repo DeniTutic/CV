@@ -12,7 +12,8 @@ export const profile = {
   role: "Full-Stack & AI Engineer",
   tagline: "React · Node.js · LLM Integrations",
   location: "Sarajevo, Bosnia and Herzegovina",
-  relocation: "Open to relocation to the U.S.",
+  // Shown in the hero and the contact section.
+  movingTo: "Denver, CO",
   email: "denitutic1@gmail.com",
   phone: "+387 62 858 621",
   phoneHref: "tel:+38762858621",
@@ -262,7 +263,7 @@ export const assistant = {
   suggestions: [
     "What is Deni working on right now?",
     "Which AI projects has Deni built?",
-    "Is Deni open to relocating to the U.S.?",
+    "What kind of role is Deni looking for?",
     "What's Deni's strongest tech stack?",
   ],
 };

@@ -5,13 +5,14 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, Check, Copy, Download, Mail, MapPin, Phone } from "lucide-react";
 import { profile } from "@/data/profile";
 import { GithubIcon, LinkedinIcon } from "./icons";
+import { Relocation } from "./Relocation";
 import { Reveal } from "./Reveal";
 
 const channels = [
   { label: "LinkedIn", value: "in/deni-tutic", href: profile.linkedin, Icon: LinkedinIcon },
   { label: "GitHub", value: "DeniTutic", href: profile.github, Icon: GithubIcon },
   { label: "Phone · WhatsApp · Viber", value: profile.phone, href: profile.phoneHref, Icon: Phone },
-  { label: "Based in", value: "Sarajevo, BiH · open to U.S.", Icon: MapPin },
+  { label: "Based in", value: `Sarajevo, BiH → ${profile.movingTo}`, Icon: MapPin },
 ];
 
 export function Contact() {
@@ -45,6 +46,7 @@ export function Contact() {
               Hiring for a full-stack or AI role, or have a product that needs shipping? I reply fast — the inbox is
               the quickest way to reach me.
             </p>
+            <Relocation className="mt-5" />
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <a

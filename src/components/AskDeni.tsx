@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUp, Sparkles, Square, X } from "lucide-react";
+import { ArrowUp, Mail, Sparkles, Square, X } from "lucide-react";
 import { assistant, profile } from "@/data/profile";
+import { LinkedinIcon } from "./icons";
 
 type Message = { role: "user" | "assistant"; content: string; failed?: boolean };
 
@@ -57,10 +58,23 @@ export function AskDeni() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // A link to the site with #ask (e.g. shared on LinkedIn) opens the chat right away.
+  useEffect(() => {
+    const openFromHash = () => {
+      if (window.location.hash !== "#ask") return;
+      // Drop the hash so following an #ask link again fires hashchange again.
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      setOpen(true);
+    };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
+
   useEffect(() => {
     const log = logRef.current;
     if (log) log.scrollTop = log.scrollHeight;
-  }, [messages, open]);
+  }, [messages, open, pending]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
@@ -120,6 +134,8 @@ export function AskDeni() {
   };
 
   const asked = messages.some((m) => m.role === "user");
+  // After a couple of answers, point visitors who are still curious to the real Deni.
+  const answered = messages.filter((m) => m.role === "assistant" && m.content && !m.failed).length;
 
   return (
     <>
@@ -204,6 +220,26 @@ export function AskDeni() {
                       {s}
                     </button>
                   ))}
+                </div>
+              )}
+
+              {answered >= 2 && !pending && (
+                <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3 text-xs text-muted">
+                  <span className="mr-1">Want to talk to {firstName} directly?</span>
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-soft/60 px-3 py-1.5 text-fg-soft transition hover:border-line-strong hover:text-fg"
+                  >
+                    <Mail className="size-3.5" /> Email
+                  </a>
+                  <a
+                    href={profile.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg-soft/60 px-3 py-1.5 text-fg-soft transition hover:border-line-strong hover:text-fg"
+                  >
+                    <LinkedinIcon className="size-3.5" /> LinkedIn
+                  </a>
                 </div>
               )}
             </div>

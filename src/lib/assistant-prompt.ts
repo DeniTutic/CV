@@ -22,7 +22,7 @@ const basics = [
   `Name: ${profile.name}`,
   `Role: ${profile.role} (${profile.tagline})`,
   `Currently: ${profile.currently.role} at ${profile.currently.company}`,
-  `Location: ${profile.location}. ${profile.relocation}`,
+  `Location: ${profile.location}. Relocating to ${profile.movingTo}, U.S.`,
   `Email: ${profile.email}`,
   `Phone / WhatsApp / Viber: ${profile.phone}`,
   `GitHub: ${profile.github}`,

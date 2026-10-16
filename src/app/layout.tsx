@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/Providers";
 import { profile } from "@/data/profile";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,17 +17,13 @@ const jetbrains = JetBrains_Mono({
 });
 
 const description =
-  "Deni Tutić — Full-Stack & AI Engineer from Sarajevo. React, Node.js, Next.js and LLM integrations. 4+ years shipping web apps with U.S.-based teams.";
-
-// Vercel sets VERCEL_PROJECT_PRODUCTION_URL at build time (e.g. "deni-tutic.vercel.app").
-const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
+  "Deni Tutić — Full-Stack & AI Engineer relocating from Sarajevo to Denver, CO. React, Node.js, Next.js and LLM integrations. 4+ years shipping web apps with U.S.-based teams.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: `${profile.name} — ${profile.role}`,
   description,
+  alternates: { canonical: "/" },
   keywords: [
     "Deni Tutić",
     "Full-Stack Developer",
@@ -35,6 +33,7 @@ export const metadata: Metadata = {
     "Next.js",
     "LLM",
     "Sarajevo",
+    "Denver",
   ],
   authors: [{ name: profile.name, url: profile.github }],
   openGraph: {
@@ -57,6 +56,21 @@ export const viewport: Viewport = {
   ],
 };
 
+// Structured data so search engines can tie "Deni Tutić" to this site and profiles.
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  jobTitle: profile.role,
+  url: siteUrl,
+  email: `mailto:${profile.email}`,
+  address: { "@type": "PostalAddress", addressLocality: "Sarajevo", addressCountry: "BA" },
+  worksFor: { "@type": "Organization", name: profile.currently.company },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "International Burch University" },
+  knowsAbout: ["React", "Node.js", "Next.js", "TypeScript", "LLM integrations", "Full-stack development"],
+  sameAs: [profile.github, profile.linkedin],
+};
+
 // Runs before paint so the saved theme never flashes. Dark is the default.
 const themeScript = `try{var t=localStorage.getItem("theme");document.documentElement.dataset.theme=t==="light"?"light":"dark"}catch(e){document.documentElement.dataset.theme="dark"}`;
 
@@ -72,7 +86,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-dvh">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
+        />
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );

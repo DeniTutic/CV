@@ -38,7 +38,7 @@ const lines: Line[] = [
     cmd: "echo $STATUS",
     out: (
       <>
-        <span className="text-ok">✓</span> B.Sc. IT (IBU &apos;26) · open to relocation → U.S.
+        <span className="text-ok">✓</span> B.Sc. IT (IBU &apos;26) · relocating → Denver, CO
       </>
     ),
   },

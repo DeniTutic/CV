@@ -64,8 +64,8 @@ function CodeCard() {
           <P>:</P> <S>native</S>
           <P> {"}"},</P>
           {"\n  "}
-          <K>openTo</K>
-          <P>:</P> <S>U.S. relocation</S>
+          <K>movingTo</K>
+          <P>:</P> <S>Denver, CO</S>
           <P>,</P>
           {"\n"}
           <P>{"}"};</P>
