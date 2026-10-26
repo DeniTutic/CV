@@ -171,7 +171,6 @@ export const projects: Project[] = [
     stack: ["React", "Node.js", "MongoDB", "Claude API", "Whisper", "Stripe"],
     image: velaShot,
     live: "https://vela-situationship-ai-tranlator.vercel.app",
-    code: "https://github.com/DeniTutic/vela-situationship-ai-tranlator",
   },
   {
     name: "Carina",
