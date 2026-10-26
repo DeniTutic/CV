@@ -221,6 +221,7 @@ export function Projects() {
               );
             })}
           </div>
+          <p className="mt-8 text-center font-mono text-sm text-muted">…and many more.</p>
         </Reveal>
       </div>
     </section>
