@@ -24,12 +24,56 @@ const moreIcon: Record<MoreProject["kind"], LucideIcon> = {
   qa: FlaskConical,
 };
 
-function MoreCard({ project, wide }: { project: MoreProject; wide: boolean }) {
+function MoreCard({ project }: { project: MoreProject }) {
   const Icon = moreIcon[project.kind];
   const link = "inline-flex items-center gap-1.5 text-fg-soft transition hover:text-accent";
+  const visual = project.image ? (
+    <Image
+      src={project.image}
+      alt={`Screenshot of ${project.name}`}
+      placeholder="blur"
+      sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+      className="size-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.04]"
+    />
+  ) : (
+    // No live site to screenshot: a large icon on a faint grid keeps the row even.
+    <div className="relative grid size-full place-items-center">
+      <div
+        aria-hidden
+        className="bg-grid absolute inset-0"
+        style={{
+          backgroundSize: "24px 24px",
+          maskImage: "radial-gradient(circle at 50% 50%, #000 25%, transparent 75%)",
+        }}
+      />
+      <span className="relative grid size-14 place-items-center rounded-2xl border border-line-strong bg-surface text-accent shadow-card">
+        <Icon className="size-6" />
+      </span>
+    </div>
+  );
   return (
-    <article className="glow-card group flex h-full gap-5 rounded-xl border border-line bg-surface/60 p-5 transition hover:border-line-strong">
-      <div className="flex min-w-0 flex-1 flex-col">
+    <article className="glow-card group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface/60 transition hover:border-line-strong">
+      <div
+        className={`relative overflow-hidden border-b border-line bg-bg-soft ${
+          project.image ? "aspect-[16/10]" : "aspect-[16/6] sm:aspect-[16/10]"
+        }`}
+      >
+        {project.live ? (
+          <a
+            href={project.live}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Open ${project.name} live site`}
+            tabIndex={-1}
+            className="block size-full"
+          >
+            {visual}
+          </a>
+        ) : (
+          visual
+        )}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col p-5">
         <div className="flex items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-bg-soft text-accent">
             <Icon className="size-4" />
@@ -62,24 +106,6 @@ function MoreCard({ project, wide }: { project: MoreProject; wide: boolean }) {
           )}
         </div>
       </div>
-      {wide && project.image && (
-        <a
-          href={project.live}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Open ${project.name} live site`}
-          tabIndex={-1}
-          className="hidden w-44 shrink-0 self-start overflow-hidden rounded-lg border border-line lg:block xl:w-52"
-        >
-          <Image
-            src={project.image}
-            alt={`Screenshot of ${project.name}`}
-            placeholder="blur"
-            sizes="208px"
-            className="aspect-[16/10] w-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.04]"
-          />
-        </a>
-      )}
     </article>
   );
 }
@@ -206,20 +232,12 @@ export function Projects() {
               <ArrowUpRight className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
-          {/* desktop: two wide cards, then three; an odd last card spans both columns on tablets */}
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-            {moreProjects.map((p, i) => {
-              const wide = i < 2;
-              const oddLast = i === moreProjects.length - 1 && moreProjects.length % 2 === 1;
-              return (
-                <div
-                  key={p.name}
-                  className={`min-w-0 ${wide ? "lg:col-span-3" : "lg:col-span-2"} ${oddLast ? "sm:col-span-2" : ""}`}
-                >
-                  <MoreCard project={p} wide={wide} />
-                </div>
-              );
-            })}
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {moreProjects.map((p) => (
+              <div key={p.name} className="min-w-0">
+                <MoreCard project={p} />
+              </div>
+            ))}
           </div>
           <p className="mt-8 text-center font-mono text-sm text-muted">…and many more.</p>
         </Reveal>

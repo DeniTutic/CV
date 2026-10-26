@@ -2,7 +2,9 @@ import type { StaticImageData } from "next/image";
 import aqualuxShot from "@/assets/projects/aqualux.webp";
 import cvlensShot from "@/assets/projects/cvlens.webp";
 import carinaShot from "@/assets/projects/carina.webp";
+import flowforgeShot from "@/assets/projects/flowforge.webp";
 import hirehandShot from "@/assets/projects/hirehand.webp";
+import ironcladShot from "@/assets/projects/ironclad.webp";
 import velaShot from "@/assets/projects/vela.webp";
 import vocarShot from "@/assets/projects/vocar.webp";
 
@@ -170,6 +172,20 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Flowforge Systems",
+    kicker: "Web & AI agency website",
+    description:
+      "The website for my web and AI agency, which builds sites and automations that turn visitors into clients. It walks through the work, the process and productized packages, and ends in a lead form.",
+    highlights: [
+      "Instant project estimator: a price range with an AI-written breakdown",
+      "Leads saved to MongoDB, with email alerts and a private admin page",
+    ],
+    stack: ["Next.js", "TypeScript", "Tailwind CSS", "MongoDB", "OpenAI API"],
+    image: flowforgeShot,
+    live: "https://flowforge-systems.vercel.app",
+    badge: "My agency",
+  },
+  {
     name: "Hirehand",
     kicker: "AI phone assistant for small businesses",
     description:
@@ -210,23 +226,10 @@ export const projects: Project[] = [
     live: "https://vocar-website.vercel.app",
     badge: "Client work",
   },
-  {
-    name: "Aqua Lux",
-    kicker: "Car wash website concept",
-    description:
-      "A website for a premium car wash: pick a package from a lit menu board, build your wash with add-ons and send a booking request in a few taps.",
-    highlights: [
-      "The chosen package and add-ons carry straight into the booking form",
-      "Scroll-linked \"wash tunnel\" nav lights up each stage, from foam to dry",
-    ],
-    stack: ["React", "TypeScript", "TanStack Start", "Tailwind CSS", "shadcn/ui"],
-    image: aqualuxShot,
-    live: "https://aqua-lux-wash.vercel.app",
-  },
 ];
 
-// Smaller cards under the featured projects. `kind` picks the card's icon;
-// the first two (with screenshots) get the wide cards on desktop.
+// Smaller cards under the featured projects, three per row on desktop.
+// `kind` picks the icon; cards without a screenshot show the icon instead.
 export type MoreProject = {
   name: string;
   kind: "ai" | "web" | "mobile" | "qa";
@@ -239,6 +242,16 @@ export type MoreProject = {
 };
 
 export const moreProjects: MoreProject[] = [
+  {
+    name: "Aqua Lux",
+    kind: "web",
+    kicker: "Car wash website concept",
+    description:
+      "A premium car wash site: pick a package from a lit menu board, add extras and they carry straight into the booking form, while a \"wash tunnel\" nav lights up each section.",
+    stack: ["React", "TypeScript", "TanStack Start", "Tailwind CSS"],
+    image: aqualuxShot,
+    live: "https://aqua-lux-wash.vercel.app",
+  },
   {
     name: "Carina",
     kind: "ai",
@@ -266,6 +279,7 @@ export const moreProjects: MoreProject[] = [
     description:
       "Conversion-focused landing page for a construction company: services, projects, process, testimonials, FAQ and a quick-quote form.",
     stack: ["React", "TypeScript", "Vite", "shadcn/ui"],
+    image: ironcladShot,
     live: "https://sturdy-site-shine.vercel.app",
   },
   {
