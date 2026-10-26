@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useSpring } from "motion/react";
-import { Briefcase, GraduationCap, Laptop, MapPin } from "lucide-react";
+import { Briefcase, Code2, GraduationCap, Laptop, MapPin } from "lucide-react";
 import { journey, type JourneyKind } from "@/data/profile";
 import { SectionHeading } from "./SectionHeading";
 
@@ -10,6 +10,7 @@ const kindIcon: Record<JourneyKind, typeof Briefcase> = {
   work: Briefcase,
   education: GraduationCap,
   freelance: Laptop,
+  milestone: Code2,
 };
 
 export function Journey() {
@@ -56,7 +57,7 @@ export function Journey() {
                     className={`grid size-10 place-items-center rounded-full border bg-surface ${
                       item.current
                         ? "border-ok/60 text-ok shadow-[0_0_0_4px_color-mix(in_oklab,var(--ok)_15%,transparent)]"
-                        : item.kind === "education"
+                        : item.kind === "education" || item.kind === "milestone"
                           ? "border-accent-2/50 text-accent-2"
                           : "border-line-strong text-accent"
                     }`}

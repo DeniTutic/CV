@@ -56,7 +56,7 @@ export const seeking = [
   { label: "Work auth", value: "No U.S. visa sponsorship needed" },
 ];
 
-export type JourneyKind = "work" | "education" | "freelance";
+export type JourneyKind = "work" | "education" | "freelance" | "milestone";
 
 export type JourneyItem = {
   kind: JourneyKind;
@@ -82,7 +82,7 @@ export const journey: JourneyItem[] = [
       "Build full-stack features and AI-powered capabilities for a B2B/B2C platform in the cybersecurity space (details under NDA).",
       "Work across the stack — front end, back end and LLM integration — with a U.S. team through daily standups and a pull-request review workflow.",
     ],
-    tags: ["React", "Node.js", "LLM APIs"],
+    tags: ["React", "Node.js", ".NET", "PostgreSQL", "Docker", "Azure DevOps", "LLM APIs"],
   },
   {
     kind: "education",
@@ -135,14 +135,22 @@ export const journey: JourneyItem[] = [
   {
     kind: "freelance",
     period: "Jun 2021 — Present",
-    title: "Full-Stack Developer",
-    org: "Freelance",
+    title: "Founder & Full-Stack Developer",
+    org: "Flowforge Systems",
+    orgUrl: "https://flowforge-systems.vercel.app/",
     location: "Remote",
     points: [
-      "Delivered 10+ web applications for local businesses from concept to deployment, scoping each build to the client's needs.",
-      "Built secure REST APIs with JWT and OAuth 2.0 (Auth0), paired with responsive, mobile-first React front ends.",
+      "Started freelancing in 2021, building web apps for local businesses, and after 10+ delivered projects turned it into Flowforge Systems, a small web and AI agency.",
+      "Design and ship conversion-focused websites, landing pages and AI automations end to end, like Hirehand, an AI phone assistant that answers calls, books appointments and sends reminders.",
+      "Build with Next.js, React and Tailwind CSS on the front end, Node.js/Express REST APIs secured with JWT and OAuth 2.0 (Auth0), and LLM APIs for the AI features.",
     ],
-    tags: ["React", "Node.js", "Express", "MongoDB"],
+    tags: ["Next.js", "React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "LLM APIs"],
+  },
+  {
+    kind: "milestone",
+    period: "2020",
+    title: "Hello, world",
+    points: ["Where it all started — first lines of HTML, then never stopped building."],
   },
 ];
 

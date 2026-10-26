@@ -69,11 +69,11 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Does Deni have DevOps or cloud experience, like Docker, CI/CD, AWS or Azure?",
-    a: "Deni has hands-on experience with Azure and Docker, and deploys his projects on Vercel and Railway. He hasn't worked with AWS.",
+    a: "Deni has hands-on experience with Azure and Docker, and uses Docker and Azure DevOps day to day at Cybermetis. He deploys his own projects on Vercel and Railway. He hasn't worked with AWS.",
   },
   {
     q: "Is Deni taking freelance clients? What kind of projects?",
-    a: "Yes. Deni shapes each project around what the client needs: web apps and websites, full-stack development, AI integration, mobile apps and AI automation.",
+    a: "Yes, through his agency Flowforge Systems (https://flowforge-systems.vercel.app/). Deni shapes each project around what the client needs: web apps and websites, full-stack development, AI integration, mobile apps and AI automation.",
   },
   {
     q: "What did professional basketball teach Deni that he brings to work?",

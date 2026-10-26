@@ -37,7 +37,8 @@ const timeline = journey
   .map((item) => {
     const head = [
       `- ${item.period}: ${item.title}`,
-      item.kind === "freelance" ? " (freelance)" : item.org && ` at ${item.org}`,
+      item.org && ` at ${item.org}`,
+      item.orgUrl && ` (${item.orgUrl})`,
       item.location && ` (${item.location})`,
       item.current && " [current role]",
     ]
