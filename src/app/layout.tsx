@@ -17,11 +17,11 @@ const jetbrains = JetBrains_Mono({
 });
 
 const description =
-  "Deni Tutić — Full-Stack & AI Engineer relocating from Sarajevo to Denver, CO. React, Node.js, Next.js and LLM integrations. 4+ years shipping web apps with U.S.-based teams.";
+  "Deni Tutić, Full-Stack & AI Engineer relocating from Sarajevo to Denver, CO. React, Node.js, Next.js and LLM integrations. 4+ years shipping web apps with U.S.-based teams.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: `${profile.name} — ${profile.role}`,
+  title: `${profile.name} - ${profile.role}`,
   description,
   alternates: { canonical: "/" },
   keywords: [
@@ -37,14 +37,14 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: profile.name, url: profile.github }],
   openGraph: {
-    title: `${profile.name} — ${profile.role}`,
+    title: `${profile.name} - ${profile.role}`,
     description,
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${profile.name} — ${profile.role}`,
+    title: `${profile.name} - ${profile.role}`,
     description,
   },
 };

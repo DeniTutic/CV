@@ -22,7 +22,7 @@ export function Stack() {
           index="04"
           label="stack"
           title="Tools I reach for."
-          intro="Comfortable across the whole stack — and picking the right tool over the familiar one."
+          intro="Comfortable across the whole stack, and picking the right tool over the familiar one."
         />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -77,7 +77,7 @@ export function Stack() {
           </span>
           {spokenLanguages.map((l) => (
             <span key={l.name} className="text-sm text-fg-soft">
-              {l.name} <span className="text-muted">— {l.level}</span>
+              {l.name}: <span className="text-muted">{l.level}</span>
             </span>
           ))}
         </motion.div>

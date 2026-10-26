@@ -59,7 +59,7 @@ export function Hero() {
 
           <p className="rise mt-5 max-w-xl text-lg leading-relaxed text-muted" style={step(3)}>
             I build <Typewriter words={heroRoles} />
-            <br /> end to end — from the data model to deployment.
+            <br /> end to end, from the data model to deployment.
           </p>
 
           <div className="rise mt-9 flex flex-wrap items-center gap-3" style={step(4)}>

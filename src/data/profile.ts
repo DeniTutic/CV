@@ -38,7 +38,7 @@ export const heroRoles = [
 
 export const about = {
   paragraphs: [
-    "I'm a full-stack and AI engineer with 4+ years of shipping web applications end to end — from the data model to deployment. Since 2023 I've worked remotely with U.S.-based teams, contributing to two crypto payment products: a multi-currency wallet and a point-of-sale system.",
+    "I'm a full-stack and AI engineer with 4+ years of shipping web applications end to end, from the data model to deployment. Since 2023 I've worked remotely with U.S.-based teams, contributing to two crypto payment products: a multi-currency wallet and a point-of-sale system.",
     "These days I build AI apps that put LLM APIs into real user workflows, not demos. I care about clean architecture, fast and friendly UIs, and getting a solid V1 in front of users quickly. I graduated with a B.Sc. in Information Technology from International Burch University in July 2026.",
   ],
   stats: [
@@ -75,14 +75,14 @@ export type JourneyItem = {
 export const journey: JourneyItem[] = [
   {
     kind: "work",
-    period: "Sep 2026 — Present",
+    period: "Sep 2026 - Present",
     title: "Full-Stack & AI Engineer",
     org: "Cybermetis",
     location: "Remote · U.S.-based",
     current: true,
     points: [
       "Build full-stack features and AI-powered capabilities for a B2B/B2C platform in the cybersecurity space (details under NDA).",
-      "Work across the stack — front end, back end and LLM integration — with a U.S. team through daily standups and a pull-request review workflow.",
+      "Work across the full stack, from front end and back end to LLM integration, with a U.S. team through daily standups and a pull-request review workflow.",
     ],
     tags: ["React", "Node.js", ".NET", "PostgreSQL", "Docker", "Azure DevOps", "LLM APIs"],
   },
@@ -100,7 +100,7 @@ export const journey: JourneyItem[] = [
   },
   {
     kind: "work",
-    period: "Aug 2025 — Oct 2025",
+    period: "Aug 2025 - Oct 2025",
     title: "Software Development Intern",
     org: "University Teleinformatics Center (UTIC)",
     location: "Sarajevo, BiH",
@@ -112,7 +112,7 @@ export const journey: JourneyItem[] = [
   },
   {
     kind: "work",
-    period: "Jan 2024 — Jan 2025",
+    period: "Jan 2024 - Jan 2025",
     title: "Full-Stack Developer",
     org: "Aurora Code Factory",
     location: "Remote · U.S.-based",
@@ -124,7 +124,7 @@ export const journey: JourneyItem[] = [
   },
   {
     kind: "work",
-    period: "May 2023 — Jan 2024",
+    period: "May 2023 - Jan 2024",
     title: "Software Development Intern → promoted",
     org: "Aurora Code Factory",
     location: "Remote · U.S.-based",
@@ -136,7 +136,7 @@ export const journey: JourneyItem[] = [
   },
   {
     kind: "freelance",
-    period: "Jun 2021 — Present",
+    period: "Jun 2021 - Present",
     title: "Founder & Full-Stack Developer",
     org: "Flowforge Systems",
     orgUrl: "https://flowforge-systems.vercel.app/",
@@ -152,7 +152,7 @@ export const journey: JourneyItem[] = [
     kind: "milestone",
     period: "2020",
     title: "Hello, world",
-    points: ["Where it all started — first lines of HTML, then never stopped building."],
+    points: ["Where it all started: first lines of HTML, then never stopped building."],
   },
 ];
 
@@ -200,7 +200,7 @@ export const projects: Project[] = [
     name: "Voćar",
     kicker: "Company website & product catalog",
     description:
-      "A bilingual website for a family snack producer from Gornji Rahić, BiH — 42 products across 12 product families, quality story and where-to-buy.",
+      "A bilingual website for a family snack producer from Gornji Rahić, BiH: 42 products across 12 product families, a quality story and where-to-buy.",
     highlights: [
       "Built for a real client, from scope to deployment",
       "Bosnian / English i18n, product catalog and detail pages",

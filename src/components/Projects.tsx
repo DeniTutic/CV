@@ -180,7 +180,7 @@ export function Projects() {
           index="03"
           label="projects"
           title="Things I've built and shipped."
-          intro="Live products — AI apps that put LLMs into real workflows, and client work that had to be right on day one."
+          intro="Live products: AI apps that put LLMs into real workflows, and client work that had to be right on day one."
         />
 
         <div className="grid gap-6 md:grid-cols-2">

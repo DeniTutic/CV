@@ -41,7 +41,7 @@ export function Contact() {
               Let&apos;s build <span className="text-gradient">something good.</span>
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-fg-soft">
-              Hiring for a full-stack or AI role, or have a product that needs shipping? I reply fast — the inbox is
+              Hiring for a full-stack or AI role, or have a product that needs shipping? I reply fast: the inbox is
               the quickest way to reach me.
             </p>
             <p className="mt-5 flex items-center gap-1.5 font-mono text-xs text-fg-soft">

@@ -1,4 +1,4 @@
-# Deni Tutić — Portfolio
+# Deni Tutić - Portfolio
 
 Personal portfolio / CV site. Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · Motion. Every page is static; the only server code is the AI assistant's `/api/chat` route.
 
