@@ -12,8 +12,9 @@ export const profile = {
   role: "Full-Stack & AI Engineer",
   tagline: "React · Node.js · LLM Integrations",
   location: "Sarajevo, Bosnia and Herzegovina",
-  // Shown in the hero and the contact section.
+  // Shown in the hero status line, the About card and the contact section.
   movingTo: "Denver, CO",
+  availableFrom: "May 2027",
   email: "denitutic1@gmail.com",
   phone: "+387 62 858 621",
   phoneHref: "tel:+38762858621",
@@ -46,7 +47,16 @@ export const about = {
   ],
 };
 
-export type JourneyKind = "work" | "education" | "freelance" | "milestone";
+// Recruiter-facing snapshot in the About section. Keep in sync with src/data/knowledge.ts.
+export const seeking = [
+  { label: "Roles", value: "Full-stack & AI engineering" },
+  { label: "Type", value: "Full-time, contract, or freelance" },
+  { label: "Where", value: "Remote, hybrid, or on-site in Denver" },
+  { label: "Available", value: profile.availableFrom },
+  { label: "Work auth", value: "No U.S. visa sponsorship needed" },
+];
+
+export type JourneyKind = "work" | "education" | "freelance";
 
 export type JourneyItem = {
   kind: JourneyKind;
@@ -133,20 +143,6 @@ export const journey: JourneyItem[] = [
       "Built secure REST APIs with JWT and OAuth 2.0 (Auth0), paired with responsive, mobile-first React front ends.",
     ],
     tags: ["React", "Node.js", "Express", "MongoDB"],
-  },
-  {
-    kind: "education",
-    period: "2021",
-    title: "Started B.Sc. in Information Technology",
-    org: "International Burch University",
-    orgUrl: "https://www.ibu.edu.ba/",
-    location: "Sarajevo, BiH",
-  },
-  {
-    kind: "milestone",
-    period: "2020",
-    title: "Hello, world",
-    points: ["Where it all started — first lines of HTML, then never stopped building."],
   },
 ];
 

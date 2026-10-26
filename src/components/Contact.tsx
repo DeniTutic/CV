@@ -2,17 +2,15 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowUpRight, Check, Copy, Download, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Check, Copy, Download, Mail, Phone, Plane } from "lucide-react";
 import { profile } from "@/data/profile";
 import { GithubIcon, LinkedinIcon } from "./icons";
-import { Relocation } from "./Relocation";
 import { Reveal } from "./Reveal";
 
 const channels = [
   { label: "LinkedIn", value: "in/deni-tutic", href: profile.linkedin, Icon: LinkedinIcon },
   { label: "GitHub", value: "DeniTutic", href: profile.github, Icon: GithubIcon },
   { label: "Phone · WhatsApp · Viber", value: profile.phone, href: profile.phoneHref, Icon: Phone },
-  { label: "Based in", value: `Sarajevo, BiH → ${profile.movingTo}`, Icon: MapPin },
 ];
 
 export function Contact() {
@@ -46,7 +44,10 @@ export function Contact() {
               Hiring for a full-stack or AI role, or have a product that needs shipping? I reply fast — the inbox is
               the quickest way to reach me.
             </p>
-            <Relocation className="mt-5" />
+            <p className="mt-5 flex items-center gap-1.5 font-mono text-xs text-fg-soft">
+              <Plane className="size-3.5 shrink-0 text-ok" />
+              Available from {profile.availableFrom} · remote, or on-site in {profile.movingTo}
+            </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <a
@@ -54,7 +55,7 @@ export function Contact() {
                 className="inline-flex items-center gap-2 rounded-lg bg-fg px-5 py-3 text-sm font-medium text-bg transition hover:opacity-90"
               >
                 <Mail className="size-4" />
-                {profile.email}
+                Email me
               </a>
               <button
                 type="button"
@@ -85,8 +86,9 @@ export function Contact() {
                 {copied ? "Email copied to clipboard" : ""}
               </span>
             </div>
+            <p className="mt-3 font-mono text-sm break-all text-muted select-all">{profile.email}</p>
 
-            <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-12 grid gap-3 sm:grid-cols-3">
               {channels.map(({ label, value, href, Icon }) => {
                 const body = (
                   <>

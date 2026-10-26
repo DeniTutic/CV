@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { nav } from "@/data/profile";
@@ -67,6 +67,22 @@ export function Nav() {
   const active = useActiveSection(ids);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  // A link's own jump doesn't scroll while the menu is open or closing,
+  // so close the menu first and jump once it's gone.
+  const pendingJump = useRef<string | null>(null);
+  const closeMenuThenJump = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!open) return;
+    e.preventDefault();
+    pendingJump.current = e.currentTarget.hash;
+    setOpen(false);
+  };
+  const jump = () => {
+    const hash = pendingJump.current;
+    pendingJump.current = null;
+    if (!hash) return;
+    history.pushState(null, "", hash);
+    document.getElementById(hash.slice(1))?.scrollIntoView();
+  };
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
 
@@ -81,7 +97,11 @@ export function Nav() {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
   }, [open]);
 
   return (
@@ -125,6 +145,13 @@ export function Nav() {
         </ul>
 
         <div className="flex items-center gap-2">
+          <a
+            href="#contact"
+            onClick={closeMenuThenJump}
+            className="inline-flex rounded-lg bg-fg px-3 py-1.5 text-sm font-medium text-bg transition hover:opacity-90"
+          >
+            Let&apos;s talk
+          </a>
           <ThemeToggle />
           <button
             type="button"
@@ -139,7 +166,7 @@ export function Nav() {
         </div>
       </nav>
 
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={jump}>
         {open && (
           <motion.ul
             id="mobile-menu"
@@ -157,8 +184,8 @@ export function Nav() {
               >
                 <a
                   href={`#${item.id}`}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 py-3 font-mono text-sm text-fg-soft"
+                  onClick={closeMenuThenJump}
+                  className="flex items-center gap-3 py-3.5 font-mono text-sm text-fg-soft"
                 >
                   <span className="text-muted">0{i + 1}</span>
                   {item.label}

@@ -78,6 +78,16 @@ export function AskDeni() {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  // Contact has its own buttons; hide the launcher there so it never covers them or the footer.
+  const [atContact, setAtContact] = useState(false);
+  useEffect(() => {
+    const contact = document.getElementById("contact");
+    if (!contact) return;
+    const observer = new IntersectionObserver(([entry]) => setAtContact(entry.isIntersecting));
+    observer.observe(contact);
+    return () => observer.disconnect();
+  }, []);
+
   // Wake the assistant's server shortly after the page loads, so the first answer is quick.
   useEffect(() => {
     const timer = setTimeout(() => fetch("/api/chat").catch(() => {}), 1500);
@@ -140,7 +150,7 @@ export function AskDeni() {
   return (
     <>
       <AnimatePresence>
-        {!open && (
+        {!open && !atContact && (
           <motion.button
             ref={launcherRef}
             type="button"

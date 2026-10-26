@@ -9,6 +9,7 @@ export function Typewriter({ words }: { words: string[] }) {
   const [index, setIndex] = useState(0);
   const [text, setText] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const longest = words.reduce((a, b) => (a.length >= b.length ? a : b), "");
 
   useEffect(() => {
     if (reduce) return;
@@ -31,9 +32,16 @@ export function Typewriter({ words }: { words: string[] }) {
   }, [text, deleting, index, words, reduce]);
 
   return (
-    <span aria-live="off" className="whitespace-nowrap">
-      <span className="text-gradient font-medium">{reduce ? words[0] : text}</span>
-      <span className="caret" aria-hidden />
+    // The invisible longest word reserves the width, so the line never jumps.
+    <span className="relative inline-grid align-baseline">
+      <span className="sr-only">{words[0]}</span>
+      <span className="invisible font-medium" aria-hidden>
+        {longest}
+      </span>
+      <span aria-hidden className="absolute inset-0">
+        <span className="text-gradient font-medium">{reduce ? words[0] : text}</span>
+        <span className="caret" />
+      </span>
     </span>
   );
 }

@@ -11,6 +11,10 @@ import { profile } from "./profile";
 export const faq: { q: string; a: string }[] = [
   { q: "How old is Deni?", a: "Deni is 24." },
   {
+    q: "When did Deni start coding? When did he start university?",
+    a: "Deni wrote his first lines of HTML in 2020 and started his B.Sc. in Information Technology at International Burch University in 2021.",
+  },
+  {
     q: "Does Deni need visa sponsorship to work in the U.S.?",
     a: "No, Deni doesn't need visa sponsorship. He plans to move to the U.S. soon and live there.",
   },

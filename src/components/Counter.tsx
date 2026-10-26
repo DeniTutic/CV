@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { animate, useInView, useReducedMotion } from "motion/react";
 
-export function Counter({ to, from = 0, suffix = "" }: { to: number; from?: number; suffix?: string }) {
+export function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const reduce = useReducedMotion();
@@ -15,7 +15,7 @@ export function Counter({ to, from = 0, suffix = "" }: { to: number; from?: numb
       el.textContent = `${to}${suffix}`;
       return;
     }
-    const controls = animate(from, to, {
+    const controls = animate(0, to, {
       duration: 1.4,
       ease: [0.22, 1, 0.36, 1],
       onUpdate: (v) => {
@@ -23,7 +23,7 @@ export function Counter({ to, from = 0, suffix = "" }: { to: number; from?: numb
       },
     });
     return () => controls.stop();
-  }, [inView, from, to, suffix, reduce]);
+  }, [inView, to, suffix, reduce]);
 
   return (
     <span ref={ref}>

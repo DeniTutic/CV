@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useSpring } from "motion/react";
-import { Briefcase, Code2, GraduationCap, Laptop, MapPin } from "lucide-react";
+import { Briefcase, GraduationCap, Laptop, MapPin } from "lucide-react";
 import { journey, type JourneyKind } from "@/data/profile";
 import { SectionHeading } from "./SectionHeading";
 
@@ -10,7 +10,6 @@ const kindIcon: Record<JourneyKind, typeof Briefcase> = {
   work: Briefcase,
   education: GraduationCap,
   freelance: Laptop,
-  milestone: Code2,
 };
 
 export function Journey() {
@@ -19,12 +18,12 @@ export function Journey() {
   const scaleY = useSpring(scrollYProgress, { stiffness: 90, damping: 25, restDelta: 0.001 });
 
   return (
-    <section id="journey" className="relative py-24 sm:py-32">
+    <section id="journey" className="relative bg-bg-soft py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           index="02"
           label="journey"
-          title="From first lines of HTML to shipping AI in production."
+          title="From freelance builds to shipping AI with U.S. teams."
           intro="Remote work with U.S. teams since 2023, crypto payment products, a university internship and a steady stream of freelance builds."
         />
 
@@ -57,7 +56,7 @@ export function Journey() {
                     className={`grid size-10 place-items-center rounded-full border bg-surface ${
                       item.current
                         ? "border-ok/60 text-ok shadow-[0_0_0_4px_color-mix(in_oklab,var(--ok)_15%,transparent)]"
-                        : item.kind === "education" || item.kind === "milestone"
+                        : item.kind === "education"
                           ? "border-accent-2/50 text-accent-2"
                           : "border-line-strong text-accent"
                     }`}

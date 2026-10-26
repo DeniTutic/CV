@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <a
-        href="#about"
+        href="#top"
         className="sr-only z-[60] rounded-md bg-fg px-4 py-2 text-bg focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >
         Skip to content

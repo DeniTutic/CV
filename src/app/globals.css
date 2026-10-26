@@ -260,17 +260,6 @@ body {
   75%, 100% { transform: scale(2.4); opacity: 0; }
 }
 
-/* ---------- Code block syntax colors ---------- */
-.tok-key { color: #7dd3fc; }
-.tok-str { color: #a5d6a7; }
-.tok-kw { color: #c4b5fd; }
-.tok-punc { color: var(--muted); }
-.tok-com { color: var(--muted); font-style: italic; }
-
-[data-theme="light"] .tok-key { color: #0369a1; }
-[data-theme="light"] .tok-str { color: #15803d; }
-[data-theme="light"] .tok-kw { color: #7c3aed; }
-
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

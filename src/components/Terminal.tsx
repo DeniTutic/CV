@@ -2,24 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import { projects } from "@/data/profile";
 
 type Line = { cmd: string; out: React.ReactNode };
 
 const lines: Line[] = [
-  {
-    cmd: "whoami",
-    out: (
-      <>
-        deni tutić — <span className="text-accent">full-stack & ai engineer</span>
-      </>
-    ),
-  },
   {
     cmd: "cat now.txt",
     out: (
       <>
         <span className="text-ok">→</span> building AI features @ <span className="text-fg">Cybermetis</span> (U.S., remote)
       </>
+    ),
+  },
+  {
+    cmd: "ls ~/shipped",
+    out: (
+      <span className="flex flex-wrap gap-x-3 gap-y-0.5">
+        {projects.map((p) => (
+          <a key={p.name} href="#projects" className="text-accent hover:underline">
+            {p.name.toLowerCase()}/
+          </a>
+        ))}
+      </span>
     ),
   },
   {
@@ -32,14 +37,6 @@ const lines: Line[] = [
           </span>
         ))}
       </span>
-    ),
-  },
-  {
-    cmd: "echo $STATUS",
-    out: (
-      <>
-        <span className="text-ok">✓</span> B.Sc. IT (IBU &apos;26) · relocating → Denver, CO
-      </>
     ),
   },
 ];

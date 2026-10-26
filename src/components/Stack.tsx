@@ -16,7 +16,7 @@ const groupIcon: Record<string, typeof Code2> = {
 
 export function Stack() {
   return (
-    <section id="stack" className="relative py-24 sm:py-32">
+    <section id="stack" className="relative bg-bg-soft py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           index="04"
