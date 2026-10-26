@@ -4,7 +4,6 @@ import cvlensShot from "@/assets/projects/cvlens.webp";
 import carinaShot from "@/assets/projects/carina.webp";
 import flowforgeShot from "@/assets/projects/flowforge.webp";
 import hirehandShot from "@/assets/projects/hirehand.webp";
-import ironcladShot from "@/assets/projects/ironclad.webp";
 import velaShot from "@/assets/projects/vela.webp";
 import vocarShot from "@/assets/projects/vocar.webp";
 
@@ -229,7 +228,7 @@ export const projects: Project[] = [
 ];
 
 // Smaller cards under the featured projects, three per row on desktop.
-// `kind` picks the icon; cards without a screenshot show the icon instead.
+// `kind` picks the icon; a screenshot, when there is one, sits on top.
 export type MoreProject = {
   name: string;
   kind: "ai" | "web" | "mobile" | "qa";
@@ -279,7 +278,6 @@ export const moreProjects: MoreProject[] = [
     description:
       "Conversion-focused landing page for a construction company: services, projects, process, testimonials, FAQ and a quick-quote form.",
     stack: ["React", "TypeScript", "Vite", "shadcn/ui"],
-    image: ironcladShot,
     live: "https://sturdy-site-shine.vercel.app",
   },
   {

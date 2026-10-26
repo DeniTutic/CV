@@ -27,52 +27,26 @@ const moreIcon: Record<MoreProject["kind"], LucideIcon> = {
 function MoreCard({ project }: { project: MoreProject }) {
   const Icon = moreIcon[project.kind];
   const link = "inline-flex items-center gap-1.5 text-fg-soft transition hover:text-accent";
-  const visual = project.image ? (
-    <Image
-      src={project.image}
-      alt={`Screenshot of ${project.name}`}
-      placeholder="blur"
-      sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
-      className="size-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.04]"
-    />
-  ) : (
-    // No live site to screenshot: a large icon on a faint grid keeps the row even.
-    <div className="relative grid size-full place-items-center">
-      <div
-        aria-hidden
-        className="bg-grid absolute inset-0"
-        style={{
-          backgroundSize: "24px 24px",
-          maskImage: "radial-gradient(circle at 50% 50%, #000 25%, transparent 75%)",
-        }}
-      />
-      <span className="relative grid size-14 place-items-center rounded-2xl border border-line-strong bg-surface text-accent shadow-card">
-        <Icon className="size-6" />
-      </span>
-    </div>
-  );
   return (
     <article className="glow-card group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface/60 transition hover:border-line-strong">
-      <div
-        className={`relative overflow-hidden border-b border-line bg-bg-soft ${
-          project.image ? "aspect-[16/10]" : "aspect-[16/6] sm:aspect-[16/10]"
-        }`}
-      >
-        {project.live ? (
-          <a
-            href={project.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Open ${project.name} live site`}
-            tabIndex={-1}
-            className="block size-full"
-          >
-            {visual}
-          </a>
-        ) : (
-          visual
-        )}
-      </div>
+      {project.image && (
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open ${project.name} live site`}
+          tabIndex={-1}
+          className="relative block aspect-[16/10] overflow-hidden border-b border-line bg-bg-soft"
+        >
+          <Image
+            src={project.image}
+            alt={`Screenshot of ${project.name}`}
+            placeholder="blur"
+            sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+            className="size-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        </a>
+      )}
       <div className="flex min-w-0 flex-1 flex-col p-5">
         <div className="flex items-center gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-bg-soft text-accent">
