@@ -21,7 +21,7 @@ const lines: Line[] = [
       <span className="flex flex-wrap gap-x-3 gap-y-0.5">
         {projects.map((p) => (
           <a key={p.name} href="#projects" className="text-accent hover:underline">
-            {p.name.toLowerCase()}/
+            {p.name.toLowerCase().replace(/\s+/g, "-")}/
           </a>
         ))}
       </span>

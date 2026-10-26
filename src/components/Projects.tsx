@@ -1,12 +1,87 @@
 import Image from "next/image";
-import { ArrowUpRight, Check, FolderGit2 } from "lucide-react";
-import { moreProjects, profile, projects, type Project } from "@/data/profile";
+import {
+  ArrowUpRight,
+  Check,
+  FlaskConical,
+  LayoutTemplate,
+  Smartphone,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
+import { moreProjects, profile, projects, type MoreProject, type Project } from "@/data/profile";
 import { GithubIcon } from "./icons";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
 
 function hostOf(url: string) {
   return new URL(url).host;
+}
+
+const moreIcon: Record<MoreProject["kind"], LucideIcon> = {
+  ai: Sparkles,
+  web: LayoutTemplate,
+  mobile: Smartphone,
+  qa: FlaskConical,
+};
+
+function MoreCard({ project, wide }: { project: MoreProject; wide: boolean }) {
+  const Icon = moreIcon[project.kind];
+  const link = "inline-flex items-center gap-1.5 text-fg-soft transition hover:text-accent";
+  return (
+    <article className="glow-card group flex h-full gap-5 rounded-xl border border-line bg-surface/60 p-5 transition hover:border-line-strong">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-center gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-bg-soft text-accent">
+            <Icon className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <h4 className="font-semibold text-fg">{project.name}</h4>
+            <p className="font-mono text-[11px] text-muted">{project.kicker}</p>
+          </div>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-muted">{project.description}</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {project.stack.map((s) => (
+            <span key={s} className="rounded-md border border-line bg-bg-soft px-2 py-0.5 font-mono text-[11px] text-fg-soft">
+              {s}
+            </span>
+          ))}
+        </div>
+        <div className="mt-auto flex items-center gap-4 pt-5 font-mono text-xs">
+          {project.live && (
+            <a href={project.live} target="_blank" rel="noopener noreferrer" className={link}>
+              live site
+              <ArrowUpRight className="size-3.5" />
+            </a>
+          )}
+          {project.code && (
+            <a href={project.code} target="_blank" rel="noopener noreferrer" className={link}>
+              <GithubIcon className="size-3.5" />
+              code
+            </a>
+          )}
+        </div>
+      </div>
+      {wide && project.image && (
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open ${project.name} live site`}
+          tabIndex={-1}
+          className="hidden w-44 shrink-0 self-start overflow-hidden rounded-lg border border-line lg:block xl:w-52"
+        >
+          <Image
+            src={project.image}
+            alt={`Screenshot of ${project.name}`}
+            placeholder="blur"
+            sizes="208px"
+            className="aspect-[16/10] w-full object-cover object-top transition duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        </a>
+      )}
+    </article>
+  );
 }
 
 function ProjectCard({ project, priority }: { project: Project; priority?: boolean }) {
@@ -131,28 +206,17 @@ export function Projects() {
               <ArrowUpRight className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {moreProjects.map((p) => {
-              const inner = (
-                <>
-                  <div className="flex items-start justify-between gap-3">
-                    <FolderGit2 className="size-5 text-accent" />
-                    {p.href && <ArrowUpRight className="size-4 text-muted transition group-hover:text-fg" />}
-                  </div>
-                  <h4 className="mt-3 font-semibold text-fg">{p.name}</h4>
-                  <p className="mt-1 text-sm leading-relaxed text-muted">{p.description}</p>
-                  <p className="mt-3 font-mono text-[11px] text-fg-soft">{p.stack.join(" · ")}</p>
-                </>
-              );
-              const cls =
-                "glow-card group block h-full rounded-xl border border-line bg-surface/60 p-5 transition hover:border-line-strong";
-              return p.href ? (
-                <a key={p.name} href={p.href} target="_blank" rel="noopener noreferrer" className={cls}>
-                  {inner}
-                </a>
-              ) : (
-                <div key={p.name} className={cls}>
-                  {inner}
+          {/* desktop: two wide cards, then three; an odd last card spans both columns on tablets */}
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+            {moreProjects.map((p, i) => {
+              const wide = i < 2;
+              const oddLast = i === moreProjects.length - 1 && moreProjects.length % 2 === 1;
+              return (
+                <div
+                  key={p.name}
+                  className={`min-w-0 ${wide ? "lg:col-span-3" : "lg:col-span-2"} ${oddLast ? "sm:col-span-2" : ""}`}
+                >
+                  <MoreCard project={p} wide={wide} />
                 </div>
               );
             })}

@@ -1,6 +1,8 @@
 import type { StaticImageData } from "next/image";
+import aqualuxShot from "@/assets/projects/aqualux.webp";
 import cvlensShot from "@/assets/projects/cvlens.webp";
 import carinaShot from "@/assets/projects/carina.webp";
+import hirehandShot from "@/assets/projects/hirehand.webp";
 import velaShot from "@/assets/projects/vela.webp";
 import vocarShot from "@/assets/projects/vocar.webp";
 
@@ -168,6 +170,20 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    name: "Hirehand",
+    kicker: "AI phone assistant for small businesses",
+    description:
+      "An AI employee for restaurants, cafés, salons and clinics: it answers the phone in Bosnian and English, books and cancels appointments, reminds clients and writes the reports.",
+    highlights: [
+      "Bookings and reminders flow into the owner's own Google Sheets, Gmail and Calendar",
+      "Bilingual landing site with a page and missed-calls calculator for each business type",
+    ],
+    stack: ["Next.js", "Three.js", "Voice AI", "Google Workspace", "Playwright"],
+    image: hirehandShot,
+    live: "https://gethirehand.vercel.app/en",
+    badge: "Flowforge product",
+  },
+  {
     name: "Vela",
     kicker: "AI relationship-clarity app",
     description:
@@ -178,34 +194,7 @@ export const projects: Project[] = [
     ],
     stack: ["React", "Node.js", "MongoDB", "Claude API", "Whisper", "Stripe"],
     image: velaShot,
-    live: "https://vela-situationship-ai-tranlator.vercel.app",
-  },
-  {
-    name: "Carina",
-    kicker: "AI health insights app",
-    description:
-      "A weekly health check-in that compares your sleep, mood, energy, movement and eating with your usual week and turns it into one calm, AI-generated briefing.",
-    highlights: [
-      "Taken from requirements to a deployed V1 in under two days",
-      "Bilingual (EN / BS) with validated, number-checked AI output",
-    ],
-    stack: ["Next.js", "PostgreSQL", "Prisma", "Claude API"],
-    image: carinaShot,
-    live: "https://carina-three.vercel.app",
-  },
-  {
-    name: "CVlens",
-    kicker: "AI CV analyzer",
-    description:
-      "Upload a CV and get a prioritised action plan — exactly what to add, remove and modify, with the reason it matters and paste-ready replacement text.",
-    highlights: [
-      "Parses PDF & DOCX, schema-enforced JSON from the model",
-      "Auth0 login with Google, MongoDB Atlas persistence",
-    ],
-    stack: ["React", "Express", "MongoDB", "Auth0", "Gemini API"],
-    image: cvlensShot,
-    live: "https://ai-cv-cc.vercel.app",
-    code: "https://github.com/DeniTutic/ai-cv-cc",
+    live: "https://getvela.vercel.app",
   },
   {
     name: "Voćar",
@@ -221,25 +210,81 @@ export const projects: Project[] = [
     live: "https://vocar-website.vercel.app",
     badge: "Client work",
   },
+  {
+    name: "Aqua Lux",
+    kicker: "Car wash website concept",
+    description:
+      "A website for a premium car wash: pick a package from a lit menu board, build your wash with add-ons and send a booking request in a few taps.",
+    highlights: [
+      "The chosen package and add-ons carry straight into the booking form",
+      "Scroll-linked \"wash tunnel\" nav lights up each stage, from foam to dry",
+    ],
+    stack: ["React", "TypeScript", "TanStack Start", "Tailwind CSS", "shadcn/ui"],
+    image: aqualuxShot,
+    live: "https://aqua-lux-wash.vercel.app",
+  },
 ];
 
-export const moreProjects = [
+// Smaller cards under the featured projects. `kind` picks the card's icon;
+// the first two (with screenshots) get the wide cards on desktop.
+export type MoreProject = {
+  name: string;
+  kind: "ai" | "web" | "mobile" | "qa";
+  kicker: string;
+  description: string;
+  stack: string[];
+  image?: StaticImageData;
+  live?: string;
+  code?: string;
+};
+
+export const moreProjects: MoreProject[] = [
   {
-    name: "Personal Budget Tracker",
-    description: "Native Android app on MVVM & clean architecture, Room persistence, StateFlow/Coroutines.",
-    stack: ["Kotlin", "Jetpack Compose", "Room"],
+    name: "Carina",
+    kind: "ai",
+    kicker: "AI health insights app",
+    description:
+      "A weekly health check-in that compares your sleep, mood, energy and movement with your usual week, then writes one calm AI briefing in English or Bosnian.",
+    stack: ["Next.js", "PostgreSQL", "Prisma", "Claude API"],
+    image: carinaShot,
+    live: "https://carina-three.vercel.app",
+  },
+  {
+    name: "CVlens",
+    kind: "ai",
+    kicker: "AI CV analyzer",
+    description:
+      "Upload a CV (PDF or DOCX) and get a prioritised action plan: what to add, remove and modify, why it matters, and paste-ready replacement text.",
+    stack: ["React", "Express", "MongoDB", "Auth0", "Gemini API"],
+    image: cvlensShot,
+    live: "https://ai-cv-cc.vercel.app",
   },
   {
     name: "Ironclad Construction",
-    description: "Conversion-focused landing page for a construction company — services, projects, process, testimonials, FAQ and a quick-quote form.",
+    kind: "web",
+    kicker: "Landing page",
+    description:
+      "Conversion-focused landing page for a construction company: services, projects, process, testimonials, FAQ and a quick-quote form.",
     stack: ["React", "TypeScript", "Vite", "shadcn/ui"],
-    href: "https://sturdy-site-shine.vercel.app",
+    live: "https://sturdy-site-shine.vercel.app",
+  },
+  {
+    name: "Personal Budget Tracker",
+    kind: "mobile",
+    kicker: "Android app",
+    description:
+      "Track income, expenses and monthly budgets. Built on MVVM and clean architecture, with Room persistence and Firebase backup.",
+    stack: ["Kotlin", "Jetpack Compose", "Room", "Firebase"],
+    code: "https://github.com/DeniTutic/Personal-Budget-Tracker",
   },
   {
     name: "SVVT Test Suite",
-    description: "15+ Selenium scenarios covering navigation, forms, security, performance and accessibility.",
+    kind: "qa",
+    kicker: "QA automation",
+    description:
+      "15+ automated browser tests for a live web app, covering navigation, forms and security, plus performance, accessibility and usability.",
     stack: ["Java", "Selenium WebDriver"],
-    href: "https://github.com/DeniTutic/SVVT-Project-2025",
+    code: "https://github.com/DeniTutic/SVVT-Project-2025",
   },
 ];
 

@@ -63,7 +63,15 @@ const featured = projects
   .join("\n");
 
 const other = moreProjects
-  .map((p) => `- ${p.name}: ${p.description} Stack: ${p.stack.join(", ")}.${p.href ? ` Link: ${p.href}` : ""}`)
+  .map((p) =>
+    [
+      `- ${p.name} (${p.kicker}): ${p.description} Stack: ${p.stack.join(", ")}.`,
+      p.live && ` Live: ${p.live}`,
+      p.code && ` Code: ${p.code}`,
+    ]
+      .filter(Boolean)
+      .join(""),
+  )
   .join("\n");
 
 const stack = skills.map((s) => `- ${s.group}: ${s.items.join(", ")}`).join("\n");

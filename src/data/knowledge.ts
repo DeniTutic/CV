@@ -61,7 +61,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: "Which project is Deni proudest of?",
-    a: "Vela, because it helps people communicate better and understand each other.",
+    a: "Hirehand, the AI phone assistant he built and offers through his agency Flowforge Systems. It answers calls for small businesses in Bosnian and English, books and cancels appointments and sends reminders.",
   },
   {
     q: "Has Deni led or mentored anyone? What team sizes has he worked in?",
